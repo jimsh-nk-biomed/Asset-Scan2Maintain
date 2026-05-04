@@ -15,7 +15,6 @@ body{
   padding:15px;
 }
 
-/* COMMON */
 .card{
   max-width:380px;
   margin:auto;
@@ -41,7 +40,6 @@ body{
   max-height:80px;
 }
 
-/* LOGIN */
 input{
   width:100%;
   padding:10px;
@@ -75,7 +73,6 @@ button{
   justify-content:space-between;
 }
 
-/* SCANNER */
 #reader{
   width:100%;
   max-width:320px;
@@ -112,7 +109,7 @@ legend{
 
 <body>
 
-<!-- LOGIN SCREEN -->
+<!-- LOGIN -->
 <div id="loginPage" class="card">
 
 <div class="title">Asset Scan2Maintain</div>
@@ -130,7 +127,7 @@ legend{
 
 </div>
 
-<!-- SCANNER SCREEN -->
+<!-- SCANNER -->
 <div id="scannerPage" style="display:none;">
 
 <div class="card">
@@ -140,64 +137,50 @@ legend{
 
 <div id="reader"></div>
 <div id="assetCard"></div>
+
 </div>
 
 </div>
 
 <script>
 
-/* ================= SHEET CONFIG ================= */
-const SHEET_ID = "1SjnaZ-OLmpZ95qr-yoMWvVGd52GCY0ziRaMqjkVq0ZY";
+/* ===== SHEET CONFIG ===== */
+const SHEET_ID="1SjnaZ-OLmpZ95qr-yoMWvVGd52GCY0ziRaMqjkVq0ZY";
 
-const LOGIN_URL =
-`https://opensheet.elk.sh/${SHEET_ID}/Users`;
+const LOGIN_URL=`https://opensheet.elk.sh/${SHEET_ID}/Users`;
+const ASSET_URL=`https://opensheet.elk.sh/${SHEET_ID}/Equipment`;
 
-const ASSET_URL =
-`https://opensheet.elk.sh/${SHEET_ID}/Equipment`;
-
-/* ================= LOGIN ================= */
+/* ===== LOGIN ===== */
 function login(){
 
-let u=document.getElementById("username").value.trim();
-let p=document.getElementById("password").value.trim();
+let u=username.value.trim();
+let p=password.value.trim();
 
 fetch(LOGIN_URL)
 .then(r=>r.json())
 .then(data=>{
 
-let found=data.find(x =>
+let f=data.find(x =>
 String(x.Username).trim()===u &&
 String(x.Password).trim()===p
 );
 
-if(found){
+if(!f){
+msg.innerHTML="Invalid Login";
+return;
+}
 
 localStorage.setItem("login","yes");
-localStorage.setItem("user",u);
-
-localStorage.setItem("IQ",found.IQ || "No");
-localStorage.setItem("OQ",found.OQ || "No");
-localStorage.setItem("PQ",found.PQ || "No");
-localStorage.setItem("Install",found.Installation || "No");
-localStorage.setItem("PMS",found.PMS || "No");
-localStorage.setItem("Cal",found.Calibration || "No");
+localStorage.setItem("IQ",f.IQ||"No");
+localStorage.setItem("OQ",f.OQ||"No");
+localStorage.setItem("PQ",f.PQ||"No");
+localStorage.setItem("Install",f.Installation||"No");
+localStorage.setItem("PMS",f.PMS||"No");
+localStorage.setItem("Cal",f.Calibration||"No");
 
 showScanner();
 
-}else{
-document.getElementById("msg").innerHTML="Invalid Login";
-}
-
 });
-}
-
-/* ================= SHOW SCANNER ================= */
-function showScanner(){
-
-document.getElementById("loginPage").style.display="none";
-document.getElementById("scannerPage").style.display="block";
-
-startScanner();
 }
 
 /* AUTO LOGIN */
@@ -205,64 +188,58 @@ if(localStorage.getItem("login")==="yes"){
 showScanner();
 }
 
-/* ================= LOGOUT ================= */
+/* ===== SHOW SCANNER ===== */
+function showScanner(){
+loginPage.style.display="none";
+scannerPage.style.display="block";
+startScanner();
+}
+
+/* ===== LOGOUT ===== */
 function logout(){
 localStorage.clear();
 location.reload();
 }
 
-/* ================= DATE ================= */
+/* ===== DATE ===== */
 function parseDate(d){
-if(!d) return null;
+if(!d)return null;
 let p=d.split("-");
 return new Date(p[2],p[1]-1,p[0]);
 }
 
-function getStatus(done,days){
-let d=parseDate(done);
-if(!d) return "";
+function getStatus(d,days){
+let dt=parseDate(d);
+if(!dt)return "";
 
-let exp=new Date(d);
+let exp=new Date(dt);
 exp.setDate(exp.getDate()+days);
 
-let today=new Date();
-let diff=(exp-today)/(1000*60*60*24);
+let diff=(exp-new Date())/(1000*60*60*24);
 
-if(diff<0) return "red";
-if(diff<=20) return "amber";
+if(diff<0)return "red";
+if(diff<=20)return "amber";
 return "green";
 }
 
-/* ================= PDF ================= */
+/* ===== PDF ===== */
 function openPDF(url){
-if(!url) return alert("PDF not available");
+if(!url)return alert("PDF not available");
 window.open(url);
 }
 
-/* ================= SHOW ASSET ================= */
+/* ===== SHOW ASSET ===== */
 function showAsset(a){
 
-let html=`
+let html=`<div class="row"><div class="label">Asset</div><div class="colon">:</div><div class="value">${a.Asset_No}</div></div>`;
 
-<div class="row"><div class="label">Asset</div><div class="colon">:</div><div class="value">${a.Asset_No}</div></div>
-
-<fieldset>
-<legend>PMS</legend>
-<div class="row"><div class="label">Done</div><div class="colon">:</div><div class="value">${a.PMS_Done_On||"-"}</div></div>
-<div class="row"><div class="label">Due</div><div class="colon">:</div>
-<div class="value ${getStatus(a.PMS_Done_On,180)}">${a.PMS_Due_On||"-"}</div></div>
-</fieldset>
-
-<hr>
-
-`;
-
-/* BUTTONS BASED ON ACCESS */
+/* INSTALL */
 if(localStorage.getItem("Install")==="Yes")
 html+=`<button onclick="openPDF('${a.Installation_PDF}')">Installation</button>`;
 
-if(localStorage.getItem("IQ")==="Yes" ||
-   localStorage.getItem("OQ")==="Yes" ||
+/* IQ OQ PQ */
+if(localStorage.getItem("IQ")==="Yes"||
+   localStorage.getItem("OQ")==="Yes"||
    localStorage.getItem("PQ")==="Yes"){
 
 html+=`<div class="btn-row">`;
@@ -279,24 +256,37 @@ html+=`<button class="small-btn" onclick="openPDF('${a.PQ_PDF}')">PQ</button>`;
 html+=`</div>`;
 }
 
+/* PMS */
 if(localStorage.getItem("PMS")==="Yes")
-html+=`<button onclick="openPDF('${a.PMS_PDF}')">PMS Report</button>`;
+html+=`<button onclick="openPDF('${a.PMS_PDF}')">PMS</button>`;
 
+/* CAL */
 if(localStorage.getItem("Cal")==="Yes")
 html+=`<button onclick="openPDF('${a.Calibration_PDF}')">Calibration</button>`;
 
-document.getElementById("assetCard").innerHTML=html;
+assetCard.innerHTML=html;
 }
 
-/* ================= SCANNER ================= */
+/* ===== SCANNER (BACK CAMERA FIX) ===== */
 function startScanner(){
 
 const qr=new Html5Qrcode("reader");
 
 Html5Qrcode.getCameras().then(cams=>{
-const cam=cams[0];
 
-qr.start(cam.id,{fps:10,qrbox:250},txt=>{
+/* PRIORITY: BACK CAMERA */
+let backCam=cams.find(c =>
+c.label.toLowerCase().includes("back") ||
+c.label.toLowerCase().includes("rear")
+);
+
+/* FALLBACK */
+let cam=backCam || cams[cams.length-1];
+
+qr.start(
+cam.id,
+{fps:10,qrbox:250},
+txt=>{
 
 qr.stop();
 
@@ -304,13 +294,15 @@ fetch(ASSET_URL)
 .then(r=>r.json())
 .then(data=>{
 let a=data.find(x=>x.Asset_No===txt.trim());
-if(!a) return alert("Asset not found");
+if(!a)return alert("Asset not found");
 showAsset(a);
 });
 
-});
+}
+);
 
 });
+
 }
 
 </script>
