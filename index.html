@@ -76,6 +76,7 @@ button{
 .box-title{
   color:#007bff;
   font-weight:bold;
+  margin-bottom:5px;
 }
 
 /* BUTTON GROUP */
@@ -96,7 +97,7 @@ button{
   font-weight:bold;
 }
 
-/* 🔥 FIXED BOTTOM LOGOUT */
+/* LOGOUT */
 .logout-btn{
   position:fixed;
   bottom:10px;
@@ -108,7 +109,6 @@ button{
   z-index:999;
 }
 
-/* spacing so content not hidden behind logout */
 .spacer{
   height:80px;
 }
@@ -131,7 +131,6 @@ button{
 
 <!-- SCANNER -->
 <div id="scannerPage" style="display:none;">
-
 <div class="card">
 
 <div class="logo"><img src="logo.jpg"></div>
@@ -140,23 +139,21 @@ button{
 <div id="reader"></div>
 <div id="assetCard"></div>
 
-<div class="spacer"></div> <!-- prevent overlap -->
+<div class="spacer"></div>
 
 </div>
 
-<!-- 🔥 BOTTOM LOGOUT -->
 <button class="logout-btn" onclick="logout()">Logout</button>
-
 </div>
 
 <script>
 
-/* ===== CONFIG ===== */
+/* CONFIG */
 const SHEET_ID="1SjnaZ-OLmpZ95qr-yoMWvVGd52GCY0ziRaMqjkVq0ZY";
 const LOGIN_URL=`https://opensheet.elk.sh/${SHEET_ID}/Users`;
 const ASSET_URL=`https://opensheet.elk.sh/${SHEET_ID}/Equipment`;
 
-/* ===== LOGIN ===== */
+/* LOGIN */
 function login(){
 fetch(LOGIN_URL)
 .then(r=>r.json())
@@ -186,7 +183,6 @@ showScanner();
 });
 }
 
-/* AUTO LOGIN */
 if(localStorage.getItem("login")==="yes"){ showScanner(); }
 
 function logout(){
@@ -194,17 +190,20 @@ localStorage.clear();
 location.reload();
 }
 
-/* ===== SHOW SCANNER ===== */
+/* SHOW SCANNER */
 function showScanner(){
 loginPage.style.display="none";
 scannerPage.style.display="block";
 startScanner();
 }
 
-/* ===== SHOW ASSET ===== */
+/* SHOW ASSET */
 function showAsset(a){
 
 let html=`
+
+<div class="box">
+<div class="box-title">Asset Details</div>
 
 <div class="row"><div class="label">Asset No</div><div class="colon">:</div><div class="value">${a.Asset_No}</div></div>
 <div class="row"><div class="label">Department</div><div class="colon">:</div><div class="value">${a.Department}</div></div>
@@ -212,6 +211,8 @@ let html=`
 <div class="row"><div class="label">Model</div><div class="colon">:</div><div class="value">${a.Model}</div></div>
 <div class="row"><div class="label">Make</div><div class="colon">:</div><div class="value">${a.Make}</div></div>
 <div class="row"><div class="label">Serial No</div><div class="colon">:</div><div class="value">${a.Serial_No}</div></div>
+
+</div>
 
 <div class="box">
 <div class="box-title">PMS</div>
@@ -243,13 +244,13 @@ if(localStorage.getItem("IQ")==="Yes" ||
 html+=`<div class="btn-row">`;
 
 if(localStorage.getItem("IQ")==="Yes")
-html+=`<button class="small-btn" onclick="openPDF('${a.IQ_PDF}')">IQ</button>`;
+html+=`<button class="small-btn">IQ</button>`;
 
 if(localStorage.getItem("OQ")==="Yes")
-html+=`<button class="small-btn" onclick="openPDF('${a.OQ_PDF}')">OQ</button>`;
+html+=`<button class="small-btn">OQ</button>`;
 
 if(localStorage.getItem("PQ")==="Yes")
-html+=`<button class="small-btn" onclick="openPDF('${a.PQ_PDF}')">PQ</button>`;
+html+=`<button class="small-btn">PQ</button>`;
 
 html+=`</div>`;
 }
@@ -261,13 +262,13 @@ html+=`<button class="approve">APPROVED</button>`;
 assetCard.innerHTML=html;
 }
 
-/* ===== PDF ===== */
+/* PDF */
 function openPDF(url){
 if(!url)return alert("PDF not available");
 window.open(url);
 }
 
-/* ===== SCANNER ===== */
+/* SCANNER */
 function startScanner(){
 
 const qr=new Html5Qrcode("reader");
