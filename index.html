@@ -15,7 +15,6 @@ body{
   padding:15px;
 }
 
-/* CARD */
 .card{
   max-width:380px;
   margin:auto;
@@ -26,7 +25,6 @@ body{
   margin-top:15px;
 }
 
-/* TITLE */
 .title{
   text-align:center;
   font-size:22px;
@@ -34,16 +32,9 @@ body{
   color:#003366;
 }
 
-/* LOGO */
-.logo{
-  text-align:center;
-}
-.logo img{
-  max-width:100%;
-  border-radius:6px;
-}
+.logo{text-align:center;}
+.logo img{max-width:100%;}
 
-/* ROW */
 .row{
   display:grid;
   grid-template-columns:140px 10px auto;
@@ -54,7 +45,6 @@ body{
 .colon{text-align:center;}
 .value{font-size:15px;}
 
-/* BOX */
 .box{
   border:2px solid #007bff;
   border-radius:10px;
@@ -69,16 +59,26 @@ body{
   margin-bottom:5px;
 }
 
-/* BUTTONS */
 button{
   width:100%;
   padding:12px;
-  margin-top:10px;
+  margin-top:8px;
   border:none;
-  border-radius:8px;
-  background:#0066cc;
+  border-radius:10px;
+  background:#1e6bb8;
   color:white;
   font-size:15px;
+}
+
+.btn-row{
+  display:flex;
+  gap:5px;
+}
+
+.small-btn{
+  flex:1;
+  padding:8px;
+  background:#28a745;
 }
 
 .approve{
@@ -86,7 +86,6 @@ button{
   font-weight:bold;
 }
 
-/* LOGIN */
 input{
   width:100%;
   padding:10px;
@@ -101,53 +100,40 @@ input{
 
 <!-- LOGIN -->
 <div id="loginPage" class="card">
-
 <div class="title">Asset Scan2Maintain</div>
-
-<div class="logo">
-<img src="logo.jpg">
-</div>
+<div class="logo"><img src="logo.jpg"></div>
 
 <input id="username" placeholder="Username">
 <input id="password" type="password" placeholder="Password">
 
 <button onclick="login()">Login</button>
-
 <div id="msg" style="color:red;text-align:center;"></div>
-
 </div>
 
 <!-- SCANNER -->
 <div id="scannerPage" style="display:none;">
-
 <div class="card">
 
-<div class="logo">
-<img src="logo.jpg">
-</div>
-
+<div class="logo"><img src="logo.jpg"></div>
 <div class="title">Asset Scan2Maintain</div>
 
 <button onclick="logout()" style="background:red;">Logout</button>
 
 <div id="reader"></div>
-
 <div id="assetCard"></div>
 
 </div>
-
 </div>
 
 <script>
 
-/* ===== SHEET ===== */
+/* ===== CONFIG ===== */
 const SHEET_ID="1SjnaZ-OLmpZ95qr-yoMWvVGd52GCY0ziRaMqjkVq0ZY";
 const LOGIN_URL=`https://opensheet.elk.sh/${SHEET_ID}/Users`;
 const ASSET_URL=`https://opensheet.elk.sh/${SHEET_ID}/Equipment`;
 
 /* ===== LOGIN ===== */
 function login(){
-
 fetch(LOGIN_URL)
 .then(r=>r.json())
 .then(data=>{
@@ -162,12 +148,22 @@ String(x.Password).trim()===p
 
 if(!f){ msg.innerHTML="Invalid Login"; return; }
 
+/* STORE PERMISSIONS (STRICT YES CHECK) */
 localStorage.setItem("login","yes");
+localStorage.setItem("Install",(f.Installation==="Yes")?"Yes":"No");
+localStorage.setItem("IQ",(f.IQ==="Yes")?"Yes":"No");
+localStorage.setItem("OQ",(f.OQ==="Yes")?"Yes":"No");
+localStorage.setItem("PQ",(f.PQ==="Yes")?"Yes":"No");
+localStorage.setItem("PMS",(f.PMS==="Yes")?"Yes":"No");
+localStorage.setItem("Cal",(f.Calibration==="Yes")?"Yes":"No");
+localStorage.setItem("Approve",(f.Approve==="Yes")?"Yes":"No");
+
 showScanner();
 
 });
 }
 
+/* AUTO LOGIN */
 if(localStorage.getItem("login")==="yes"){ showScanner(); }
 
 function logout(){
@@ -180,30 +176,6 @@ function showScanner(){
 loginPage.style.display="none";
 scannerPage.style.display="block";
 startScanner();
-}
-
-/* ===== DATE ===== */
-function parseDate(d){
-if(!d)return null;
-let p=d.split(/[-\/]/);
-return new Date(p[2],p[1]-1,p[0]);
-}
-
-function getStatus(d,days){
-let dt=parseDate(d);
-if(!dt)return "";
-let exp=new Date(dt);
-exp.setDate(exp.getDate()+days);
-let diff=(exp-new Date())/(1000*60*60*24);
-if(diff<0)return "red";
-if(diff<20)return "orange";
-return "green";
-}
-
-/* ===== PDF ===== */
-function openPDF(url){
-if(!url)return alert("PDF not available");
-window.open(url);
 }
 
 /* ===== SHOW ASSET ===== */
@@ -229,35 +201,60 @@ let html=`
 <div class="row"><div class="label">Done On</div><div class="colon">:</div><div class="value">${a.Calibration_Done_On||"-"}</div></div>
 <div class="row"><div class="label">Due On</div><div class="colon">:</div><div class="value">${a.Calibration_Due_On||"-"}</div></div>
 </div>
-
-<button onclick="openPDF('${a.Installation_PDF}')">Installation Report</button>
-
-<button onclick="openPDF('${a.PMS_PDF}')">PMS Report</button>
-
-<button onclick="openPDF('${a.Calibration_PDF}')">Calibration Report</button>
-
-<button class="approve" onclick="approveAsset('${a.Asset_No}')">APPROVED</button>
-
 `;
+
+/* ===== BUTTON CONTROL ===== */
+
+if(localStorage.getItem("Install")==="Yes")
+html+=`<button onclick="openPDF('${a.Installation_PDF}')">Installation Report</button>`;
+
+if(localStorage.getItem("PMS")==="Yes")
+html+=`<button onclick="openPDF('${a.PMS_PDF}')">PMS Report</button>`;
+
+if(localStorage.getItem("Cal")==="Yes")
+html+=`<button onclick="openPDF('${a.Calibration_PDF}')">Calibration Report</button>`;
+
+/* IQ OQ PQ */
+if(localStorage.getItem("IQ")==="Yes" ||
+   localStorage.getItem("OQ")==="Yes" ||
+   localStorage.getItem("PQ")==="Yes"){
+
+html+=`<div class="btn-row">`;
+
+if(localStorage.getItem("IQ")==="Yes")
+html+=`<button class="small-btn" onclick="openPDF('${a.IQ_PDF}')">IQ</button>`;
+
+if(localStorage.getItem("OQ")==="Yes")
+html+=`<button class="small-btn" onclick="openPDF('${a.OQ_PDF}')">OQ</button>`;
+
+if(localStorage.getItem("PQ")==="Yes")
+html+=`<button class="small-btn" onclick="openPDF('${a.PQ_PDF}')">PQ</button>`;
+
+html+=`</div>`;
+}
+
+/* APPROVE BUTTON (STRICT CONTROL) */
+if(localStorage.getItem("Approve")==="Yes"){
+html+=`<button class="approve">APPROVED</button>`;
+}
 
 assetCard.innerHTML=html;
 }
 
-/* ===== APPROVE ===== */
-function approveAsset(assetNo){
-alert("Asset "+assetNo+" Approved ✅");
-
-/* OPTIONAL: send to Google Sheet (advanced) */
+/* ===== PDF ===== */
+function openPDF(url){
+if(!url)return alert("PDF not available");
+window.open(url);
 }
 
-/* ===== SCANNER BACK CAMERA ===== */
+/* ===== SCANNER ===== */
 function startScanner(){
 
 const qr=new Html5Qrcode("reader");
 
 Html5Qrcode.getCameras().then(cams=>{
 
-let back=cams.find(c=>c.label.toLowerCase().includes("back"))||cams[cams.length-1];
+let back=cams.find(c=>c.label.toLowerCase().includes("back")) || cams[cams.length-1];
 
 qr.start(back.id,{fps:10,qrbox:250},txt=>{
 
