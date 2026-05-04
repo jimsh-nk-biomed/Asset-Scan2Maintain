@@ -2,151 +2,153 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Asset Scan2Maintain Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asset Scan2Maintain</title>
 
 <style>
-body{
-  font-family:Arial,sans-serif;
-  background:#eef2f5;
-  margin:0;
-  padding:20px;
+body {
+  font-family: Arial;
+  background: #eef2f5;
+  padding: 15px;
 }
 
-/* CARD */
-.box{
-  max-width:380px;
-  margin:auto;
+.logo { text-align:center; }
+.logo img { max-height:70px; }
+
+h2 { text-align:center; color:#003366; }
+
+#reader { max-width:350px; margin:auto; }
+
+.card {
   background:#fff;
-  padding:25px;
+  padding:15px;
   border-radius:10px;
-  box-shadow:0 2px 10px rgba(0,0,0,.15);
-  text-align:center;
+  margin-top:15px;
 }
 
-/* TITLE */
-.title{
-  font-size:20px;
-  font-weight:bold;
-  color:#003366;
-  margin-bottom:10px;
+.row{
+  display:grid;
+  grid-template-columns:140px 10px auto;
+  margin-bottom:5px;
 }
 
-/* LOGO */
-.logo img{
-  max-height:80px;
-  margin-bottom:15px;
-}
-
-input{
+.btn{
   width:100%;
   padding:10px;
-  margin-top:10px;
-  border:1px solid #ccc;
-  border-radius:6px;
-  box-sizing:border-box;
-}
-
-button{
-  width:100%;
-  padding:12px;
-  margin-top:12px;
-  border:none;
-  border-radius:6px;
+  margin-top:6px;
   background:#0066cc;
   color:#fff;
-  font-size:16px;
-  cursor:pointer;
+  border:none;
+  border-radius:6px;
 }
 
-#msg{
-  text-align:center;
-  color:red;
-  margin-top:10px;
+.small-btn{
+  flex:1;
+  padding:8px;
+  background:#28a745;
+  color:#fff;
+  border:none;
+  border-radius:6px;
 }
 
-.small{
-  font-size:13px;
-  color:#555;
-  margin-top:10px;
+.btn-row{
+  display:flex;
+  gap:5px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="box">
+<script>
+/* LOGIN CHECK */
+if(localStorage.getItem("login")!=="yes"){
+  window.location.href="index.html";
+}
+</script>
 
-  <!-- TITLE -->
-  <div class="title">Asset Scan2Maintain</div>
-
-  <!-- LOGO -->
-  <div class="logo">
-    <img src="logo.jpg" alt="Company Logo">
-  </div>
-
-  <!-- LOGIN -->
-  <input type="text" id="username" placeholder="Username">
-  <input type="password" id="password" placeholder="Password">
-
-  <button onclick="login()">Login</button>
-
-  <div id="msg"></div>
-
+<div class="logo">
+<img src="logo.jpg">
 </div>
+
+<h2>Asset Scan2Maintain</h2>
+
+<div id="reader"></div>
+<div id="assetCard" class="card" style="display:none;"></div>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
 
 <script>
 
-const SHEET_ID = "1SjnaZ-OLmpZ95qr-yoMWvVGd52GCY0ziRaMqjkVq0ZY";
-const LOGIN_SHEET = "Users";
-const NEXT_PAGE = "scanner.html";
+const SHEET_URL =
+"https://opensheet.elk.sh/1SjnaZ-OLmpZ95qr-yoMWvVGd52GCY0ziRaMqjkVq0ZY/Equipment";
 
-const LOGIN_URL =
-`https://opensheet.elk.sh/${SHEET_ID}/${LOGIN_SHEET}`;
-
-function login(){
-
-let u = document.getElementById("username").value.trim();
-let p = document.getElementById("password").value.trim();
-
-if(u==="" || p===""){
-document.getElementById("msg").innerHTML="Enter username & password";
-return;
+function openPDF(url){
+if(!url) return alert("Not available");
+window.open(url,"_blank");
 }
 
-document.getElementById("msg").innerHTML="Checking...";
+function showAsset(a){
 
-fetch(LOGIN_URL)
+let html = `
+<div class="row"><b>Asset</b><div>:</div><div>${a.Asset_No}</div></div>
+<div class="row"><b>Equipment</b><div>:</div><div>${a.Equipment}</div></div>
+<hr>
+`;
+
+/* BUTTON CONTROL */
+if(localStorage.getItem("canInstall")=="Yes")
+html += `<button class="btn" onclick="openPDF('${a.Installation_PDF}')">Installation</button>`;
+
+if(localStorage.getItem("canIQ")=="Yes" ||
+   localStorage.getItem("canOQ")=="Yes" ||
+   localStorage.getItem("canPQ")=="Yes"){
+
+html += `<div class="btn-row">`;
+
+if(localStorage.getItem("canIQ")=="Yes")
+html += `<button class="small-btn" onclick="openPDF('${a.IQ_PDF}')">IQ</button>`;
+
+if(localStorage.getItem("canOQ")=="Yes")
+html += `<button class="small-btn" onclick="openPDF('${a.OQ_PDF}')">OQ</button>`;
+
+if(localStorage.getItem("canPQ")=="Yes")
+html += `<button class="small-btn" onclick="openPDF('${a.PQ_PDF}')">PQ</button>`;
+
+html += `</div>`;
+}
+
+if(localStorage.getItem("canPMS")=="Yes")
+html += `<button class="btn" onclick="openPDF('${a.PMS_PDF}')">PMS</button>`;
+
+if(localStorage.getItem("canCal")=="Yes")
+html += `<button class="btn" onclick="openPDF('${a.Calibration_PDF}')">Calibration</button>`;
+
+document.getElementById("assetCard").innerHTML = html;
+document.getElementById("assetCard").style.display="block";
+}
+
+/* QR */
+const qr = new Html5Qrcode("reader");
+
+Html5Qrcode.getCameras().then(cams => {
+const cam = cams[0];
+
+qr.start(cam.id, {fps:10, qrbox:250}, txt => {
+
+qr.stop();
+
+fetch(SHEET_URL)
 .then(r=>r.json())
 .then(data=>{
-
-let found = data.find(x =>
-String(x.Username).trim()===u &&
-String(x.Password).trim()===p
-);
-
-if(found){
-
-localStorage.setItem("loginUser",u);
-localStorage.setItem("canInstall",found.Installation || "No");
-localStorage.setItem("canIQ",found.IQ || "No");
-localStorage.setItem("canOQ",found.OQ || "No");
-localStorage.setItem("canPQ",found.PQ || "No");
-localStorage.setItem("canPMS",found.PMS || "No");
-localStorage.setItem("canCal",found.Calibration || "No");
-
-window.location.href = NEXT_PAGE;
-
-}else{
-document.getElementById("msg").innerHTML="Invalid Login";
-}
-
-})
-.catch(err=>{
-document.getElementById("msg").innerHTML="Google Sheet connection failed";
+let asset = data.find(x=>x.Asset_No==txt.trim());
+if(!asset) return alert("Not found");
+showAsset(asset);
 });
 
-}
+});
+
+});
 
 </script>
 
