@@ -35,26 +35,29 @@ body{
 .logo{text-align:center;}
 .logo img{max-width:100%;}
 
-/* FIXED INPUT ALIGNMENT */
+/* INPUT + BUTTON FIX */
 input, button{
   width:100%;
   padding:12px;
   margin-top:10px;
   border-radius:10px;
   font-size:15px;
-  box-sizing:border-box; /* 🔥 KEY FIX */
+  box-sizing:border-box;
 }
 
-/* INPUT */
 input{
   border:1px solid #ccc;
 }
 
-/* BUTTON */
 button{
   border:none;
   background:#1e6bb8;
   color:white;
+}
+
+/* LOGOUT BUTTON */
+.logout{
+  background:red;
 }
 
 /* ROW */
@@ -82,7 +85,7 @@ button{
   font-weight:bold;
 }
 
-/* BUTTON GROUP */
+/* SMALL BUTTONS */
 .btn-row{
   display:flex;
   gap:5px;
@@ -123,8 +126,6 @@ button{
 <div class="logo"><img src="logo.jpg"></div>
 <div class="title">Asset Scan2Maintain</div>
 
-<button onclick="logout()" style="background:red;">Logout</button>
-
 <div id="reader"></div>
 <div id="assetCard"></div>
 
@@ -133,12 +134,12 @@ button{
 
 <script>
 
-/* ===== CONFIG ===== */
+/* CONFIG */
 const SHEET_ID="1SjnaZ-OLmpZ95qr-yoMWvVGd52GCY0ziRaMqjkVq0ZY";
 const LOGIN_URL=`https://opensheet.elk.sh/${SHEET_ID}/Users`;
-const ASSET_URL=`https://opensheet.elk.sh/${SHEET_ID}/Equipment`;
+const ASSET_URL=`https://opensheet.elk.sh/${SHEET_ID}/Asset_Master`;
 
-/* ===== LOGIN ===== */
+/* LOGIN */
 function login(){
 fetch(LOGIN_URL)
 .then(r=>r.json())
@@ -168,7 +169,6 @@ showScanner();
 });
 }
 
-/* AUTO LOGIN */
 if(localStorage.getItem("login")==="yes"){ showScanner(); }
 
 function logout(){
@@ -176,14 +176,14 @@ localStorage.clear();
 location.reload();
 }
 
-/* ===== SHOW SCANNER ===== */
+/* SHOW SCANNER */
 function showScanner(){
 loginPage.style.display="none";
 scannerPage.style.display="block";
 startScanner();
 }
 
-/* ===== SHOW ASSET ===== */
+/* SHOW ASSET */
 function showAsset(a){
 
 let html=`
@@ -218,6 +218,7 @@ html+=`<button onclick="openPDF('${a.PMS_PDF}')">PMS Report</button>`;
 if(localStorage.getItem("Cal")==="Yes")
 html+=`<button onclick="openPDF('${a.Calibration_PDF}')">Calibration Report</button>`;
 
+/* IQ OQ PQ */
 if(localStorage.getItem("IQ")==="Yes" ||
    localStorage.getItem("OQ")==="Yes" ||
    localStorage.getItem("PQ")==="Yes"){
@@ -236,20 +237,24 @@ html+=`<button class="small-btn" onclick="openPDF('${a.PQ_PDF}')">PQ</button>`;
 html+=`</div>`;
 }
 
+/* APPROVE */
 if(localStorage.getItem("Approve")==="Yes"){
 html+=`<button class="approve">APPROVED</button>`;
 }
 
+/* ✅ LOGOUT AT BOTTOM */
+html+=`<button class="logout" onclick="logout()">Logout</button>`;
+
 assetCard.innerHTML=html;
 }
 
-/* ===== PDF ===== */
+/* PDF */
 function openPDF(url){
 if(!url)return alert("PDF not available");
 window.open(url);
 }
 
-/* ===== SCANNER ===== */
+/* SCANNER */
 function startScanner(){
 
 const qr=new Html5Qrcode("reader");
