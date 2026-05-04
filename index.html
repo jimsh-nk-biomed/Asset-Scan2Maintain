@@ -2,153 +2,131 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Asset Scan2Maintain</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Login</title>
 
 <style>
-body {
-  font-family: Arial;
-  background: #eef2f5;
-  padding: 15px;
+body{
+  font-family:Arial;
+  background:#eef2f5;
+  padding:20px;
 }
 
-.logo { text-align:center; }
-.logo img { max-height:70px; }
-
-h2 { text-align:center; color:#003366; }
-
-#reader { max-width:350px; margin:auto; }
-
-.card {
+.box{
+  max-width:380px;
+  margin:auto;
   background:#fff;
-  padding:15px;
+  padding:25px;
   border-radius:10px;
-  margin-top:15px;
+  box-shadow:0 2px 10px rgba(0,0,0,.15);
+  text-align:center;
 }
 
-.row{
-  display:grid;
-  grid-template-columns:140px 10px auto;
-  margin-bottom:5px;
+.title{
+  font-size:20px;
+  font-weight:bold;
+  color:#003366;
 }
 
-.btn{
+.logo img{
+  max-height:80px;
+  margin:10px 0;
+}
+
+input{
   width:100%;
   padding:10px;
-  margin-top:6px;
+  margin-top:10px;
+  border:1px solid #ccc;
+  border-radius:6px;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  margin-top:12px;
   background:#0066cc;
   color:#fff;
   border:none;
   border-radius:6px;
 }
 
-.small-btn{
-  flex:1;
-  padding:8px;
-  background:#28a745;
-  color:#fff;
-  border:none;
-  border-radius:6px;
-}
-
-.btn-row{
-  display:flex;
-  gap:5px;
+#msg{
+  color:red;
+  margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
-<script>
-/* LOGIN CHECK */
-if(localStorage.getItem("login")!=="yes"){
-  window.location.href="index.html";
-}
-</script>
+<div class="box">
+
+<div class="title">Asset Scan2Maintain</div>
 
 <div class="logo">
-<img src="logo.jpg">
+  <img src="logo.jpg" alt="Company Logo">
 </div>
 
-<h2>Asset Scan2Maintain</h2>
+<input id="username" placeholder="Username">
+<input id="password" type="password" placeholder="Password">
 
-<div id="reader"></div>
-<div id="assetCard" class="card" style="display:none;"></div>
+<button onclick="login()">Login</button>
 
-<script src="https://unpkg.com/html5-qrcode"></script>
+<div id="msg"></div>
+
+</div>
 
 <script>
 
-const SHEET_URL =
-"https://opensheet.elk.sh/1SjnaZ-OLmpZ95qr-yoMWvVGd52GCY0ziRaMqjkVq0ZY/Equipment";
+const SHEET_ID = "1SjnaZ-OLmpZ95qr-yoMWvVGd52GCY0ziRaMqjkVq0ZY";
+const LOGIN_URL = `https://opensheet.elk.sh/${SHEET_ID}/Users`;
 
-function openPDF(url){
-if(!url) return alert("Not available");
-window.open(url,"_blank");
+function login(){
+
+let u = document.getElementById("username").value.trim();
+let p = document.getElementById("password").value.trim();
+
+if(!u || !p){
+document.getElementById("msg").innerHTML="Enter username & password";
+return;
 }
 
-function showAsset(a){
+document.getElementById("msg").innerHTML="Checking...";
 
-let html = `
-<div class="row"><b>Asset</b><div>:</div><div>${a.Asset_No}</div></div>
-<div class="row"><b>Equipment</b><div>:</div><div>${a.Equipment}</div></div>
-<hr>
-`;
-
-/* BUTTON CONTROL */
-if(localStorage.getItem("canInstall")=="Yes")
-html += `<button class="btn" onclick="openPDF('${a.Installation_PDF}')">Installation</button>`;
-
-if(localStorage.getItem("canIQ")=="Yes" ||
-   localStorage.getItem("canOQ")=="Yes" ||
-   localStorage.getItem("canPQ")=="Yes"){
-
-html += `<div class="btn-row">`;
-
-if(localStorage.getItem("canIQ")=="Yes")
-html += `<button class="small-btn" onclick="openPDF('${a.IQ_PDF}')">IQ</button>`;
-
-if(localStorage.getItem("canOQ")=="Yes")
-html += `<button class="small-btn" onclick="openPDF('${a.OQ_PDF}')">OQ</button>`;
-
-if(localStorage.getItem("canPQ")=="Yes")
-html += `<button class="small-btn" onclick="openPDF('${a.PQ_PDF}')">PQ</button>`;
-
-html += `</div>`;
-}
-
-if(localStorage.getItem("canPMS")=="Yes")
-html += `<button class="btn" onclick="openPDF('${a.PMS_PDF}')">PMS</button>`;
-
-if(localStorage.getItem("canCal")=="Yes")
-html += `<button class="btn" onclick="openPDF('${a.Calibration_PDF}')">Calibration</button>`;
-
-document.getElementById("assetCard").innerHTML = html;
-document.getElementById("assetCard").style.display="block";
-}
-
-/* QR */
-const qr = new Html5Qrcode("reader");
-
-Html5Qrcode.getCameras().then(cams => {
-const cam = cams[0];
-
-qr.start(cam.id, {fps:10, qrbox:250}, txt => {
-
-qr.stop();
-
-fetch(SHEET_URL)
+fetch(LOGIN_URL)
 .then(r=>r.json())
 .then(data=>{
-let asset = data.find(x=>x.Asset_No==txt.trim());
-if(!asset) return alert("Not found");
-showAsset(asset);
+
+let found = data.find(x =>
+x.Username==u && x.Password==p
+);
+
+if(found){
+
+localStorage.setItem("login","yes");
+
+/* permissions */
+localStorage.setItem("canInstall",found.Installation||"No");
+localStorage.setItem("canIQ",found.IQ||"No");
+localStorage.setItem("canOQ",found.OQ||"No");
+localStorage.setItem("canPQ",found.PQ||"No");
+localStorage.setItem("canPMS",found.PMS||"No");
+localStorage.setItem("canCal",found.Calibration||"No");
+
+/* OPEN SCANNER */
+window.location.href = "scanner.html";
+
+}else{
+document.getElementById("msg").innerHTML="Invalid login";
+}
+
+})
+.catch(()=>{
+document.getElementById("msg").innerHTML="Sheet connection error";
 });
 
-});
-
-});
+}
 
 </script>
 
