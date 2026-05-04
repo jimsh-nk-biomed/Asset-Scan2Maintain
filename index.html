@@ -15,6 +15,7 @@ body{
   padding:15px;
 }
 
+/* CARD */
 .card{
   max-width:380px;
   margin:auto;
@@ -25,6 +26,7 @@ body{
   margin-top:15px;
 }
 
+/* TITLE */
 .title{
   text-align:center;
   font-size:22px;
@@ -32,25 +34,18 @@ body{
   color:#003366;
 }
 
+/* LOGO */
 .logo{text-align:center;}
 .logo img{max-width:100%;}
 
-/* INPUT + BUTTON ALIGN FIX */
-input, button{
+/* LOGIN FIX */
+.login-input{
   width:100%;
-  padding:12px;
+  padding:10px;
   margin-top:10px;
-  border-radius:10px;
-  font-size:15px;
-  box-sizing:border-box;
-}
-
-input{ border:1px solid #ccc; }
-
-button{
-  border:none;
-  background:#1e6bb8;
-  color:white;
+  border:1px solid #ccc;
+  border-radius:6px;
+  box-sizing:border-box;   /* FIX ALIGNMENT ISSUE */
 }
 
 /* ROW */
@@ -64,7 +59,7 @@ button{
 .colon{text-align:center;}
 .value{font-size:15px;}
 
-/* BOX */
+/* BOX (USED FOR ALL SECTIONS NOW) */
 .box{
   border:2px solid #007bff;
   border-radius:10px;
@@ -79,7 +74,18 @@ button{
   margin-bottom:5px;
 }
 
-/* BUTTON GROUP */
+/* BUTTONS */
+button{
+  width:100%;
+  padding:12px;
+  margin-top:8px;
+  border:none;
+  border-radius:10px;
+  background:#1e6bb8;
+  color:white;
+  font-size:15px;
+}
+
 .btn-row{
   display:flex;
   gap:5px;
@@ -91,26 +97,15 @@ button{
   background:#28a745;
 }
 
-/* APPROVE */
 .approve{
   background:#28a745;
   font-weight:bold;
 }
 
-/* LOGOUT */
+/* LOGOUT AT BOTTOM */
 .logout-btn{
-  position:fixed;
-  bottom:10px;
-  left:50%;
-  transform:translateX(-50%);
-  width:90%;
-  max-width:380px;
   background:red;
-  z-index:999;
-}
-
-.spacer{
-  height:80px;
+  margin-top:15px;
 }
 </style>
 </head>
@@ -122,8 +117,8 @@ button{
 <div class="title">Asset Scan2Maintain</div>
 <div class="logo"><img src="logo.jpg"></div>
 
-<input id="username" placeholder="Username">
-<input id="password" type="password" placeholder="Password">
+<input id="username" class="login-input" placeholder="Username">
+<input id="password" type="password" class="login-input" placeholder="Password">
 
 <button onclick="login()">Login</button>
 <div id="msg" style="color:red;text-align:center;"></div>
@@ -139,21 +134,20 @@ button{
 <div id="reader"></div>
 <div id="assetCard"></div>
 
-<div class="spacer"></div>
+<!-- LOGOUT AT BOTTOM -->
+<button onclick="logout()" class="logout-btn">Logout</button>
 
 </div>
-
-<button class="logout-btn" onclick="logout()">Logout</button>
 </div>
 
 <script>
 
-/* CONFIG */
+/* ===== CONFIG ===== */
 const SHEET_ID="1SjnaZ-OLmpZ95qr-yoMWvVGd52GCY0ziRaMqjkVq0ZY";
 const LOGIN_URL=`https://opensheet.elk.sh/${SHEET_ID}/Users`;
 const ASSET_URL=`https://opensheet.elk.sh/${SHEET_ID}/Equipment`;
 
-/* LOGIN */
+/* ===== LOGIN ===== */
 function login(){
 fetch(LOGIN_URL)
 .then(r=>r.json())
@@ -169,6 +163,7 @@ String(x.Password).trim()===p
 
 if(!f){ msg.innerHTML="Invalid Login"; return; }
 
+/* STORE PERMISSIONS */
 localStorage.setItem("login","yes");
 localStorage.setItem("Install",(f.Installation==="Yes")?"Yes":"No");
 localStorage.setItem("IQ",(f.IQ==="Yes")?"Yes":"No");
@@ -183,6 +178,7 @@ showScanner();
 });
 }
 
+/* AUTO LOGIN */
 if(localStorage.getItem("login")==="yes"){ showScanner(); }
 
 function logout(){
@@ -190,28 +186,26 @@ localStorage.clear();
 location.reload();
 }
 
-/* SHOW SCANNER */
+/* ===== SHOW SCANNER ===== */
 function showScanner(){
 loginPage.style.display="none";
 scannerPage.style.display="block";
 startScanner();
 }
 
-/* SHOW ASSET */
+/* ===== SHOW ASSET ===== */
 function showAsset(a){
 
 let html=`
 
+<!-- TOP DETAILS IN BLUE BOX -->
 <div class="box">
-<div class="box-title">Asset Details</div>
-
 <div class="row"><div class="label">Asset No</div><div class="colon">:</div><div class="value">${a.Asset_No}</div></div>
 <div class="row"><div class="label">Department</div><div class="colon">:</div><div class="value">${a.Department}</div></div>
 <div class="row"><div class="label">Equipment</div><div class="colon">:</div><div class="value">${a.Equipment}</div></div>
 <div class="row"><div class="label">Model</div><div class="colon">:</div><div class="value">${a.Model}</div></div>
 <div class="row"><div class="label">Make</div><div class="colon">:</div><div class="value">${a.Make}</div></div>
 <div class="row"><div class="label">Serial No</div><div class="colon">:</div><div class="value">${a.Serial_No}</div></div>
-
 </div>
 
 <div class="box">
@@ -237,6 +231,7 @@ html+=`<button onclick="openPDF('${a.PMS_PDF}')">PMS Report</button>`;
 if(localStorage.getItem("Cal")==="Yes")
 html+=`<button onclick="openPDF('${a.Calibration_PDF}')">Calibration Report</button>`;
 
+/* IQ OQ PQ */
 if(localStorage.getItem("IQ")==="Yes" ||
    localStorage.getItem("OQ")==="Yes" ||
    localStorage.getItem("PQ")==="Yes"){
@@ -244,17 +239,18 @@ if(localStorage.getItem("IQ")==="Yes" ||
 html+=`<div class="btn-row">`;
 
 if(localStorage.getItem("IQ")==="Yes")
-html+=`<button class="small-btn">IQ</button>`;
+html+=`<button class="small-btn" onclick="openPDF('${a.IQ_PDF}')">IQ</button>`;
 
 if(localStorage.getItem("OQ")==="Yes")
-html+=`<button class="small-btn">OQ</button>`;
+html+=`<button class="small-btn" onclick="openPDF('${a.OQ_PDF}')">OQ</button>`;
 
 if(localStorage.getItem("PQ")==="Yes")
-html+=`<button class="small-btn">PQ</button>`;
+html+=`<button class="small-btn" onclick="openPDF('${a.PQ_PDF}')">PQ</button>`;
 
 html+=`</div>`;
 }
 
+/* APPROVE */
 if(localStorage.getItem("Approve")==="Yes"){
 html+=`<button class="approve">APPROVED</button>`;
 }
@@ -262,13 +258,13 @@ html+=`<button class="approve">APPROVED</button>`;
 assetCard.innerHTML=html;
 }
 
-/* PDF */
+/* ===== PDF ===== */
 function openPDF(url){
 if(!url)return alert("PDF not available");
 window.open(url);
 }
 
-/* SCANNER */
+/* ===== SCANNER ===== */
 function startScanner(){
 
 const qr=new Html5Qrcode("reader");
@@ -286,7 +282,6 @@ let a=data.find(x=>x.Asset_No===txt.trim());
 if(!a)return alert("Asset not found");
 showAsset(a);
 });
-
 });
 });
 }
