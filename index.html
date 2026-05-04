@@ -35,6 +35,29 @@ body{
 .logo{text-align:center;}
 .logo img{max-width:100%;}
 
+/* FIXED INPUT ALIGNMENT */
+input, button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:10px;
+  font-size:15px;
+  box-sizing:border-box; /* 🔥 KEY FIX */
+}
+
+/* INPUT */
+input{
+  border:1px solid #ccc;
+}
+
+/* BUTTON */
+button{
+  border:none;
+  background:#1e6bb8;
+  color:white;
+}
+
+/* ROW */
 .row{
   display:grid;
   grid-template-columns:140px 10px auto;
@@ -45,6 +68,7 @@ body{
 .colon{text-align:center;}
 .value{font-size:15px;}
 
+/* BOX */
 .box{
   border:2px solid #007bff;
   border-radius:10px;
@@ -56,20 +80,9 @@ body{
 .box-title{
   color:#007bff;
   font-weight:bold;
-  margin-bottom:5px;
 }
 
-button{
-  width:100%;
-  padding:12px;
-  margin-top:8px;
-  border:none;
-  border-radius:10px;
-  background:#1e6bb8;
-  color:white;
-  font-size:15px;
-}
-
+/* BUTTON GROUP */
 .btn-row{
   display:flex;
   gap:5px;
@@ -81,17 +94,10 @@ button{
   background:#28a745;
 }
 
+/* APPROVE */
 .approve{
   background:#28a745;
   font-weight:bold;
-}
-
-input{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  border:1px solid #ccc;
-  border-radius:6px;
 }
 </style>
 </head>
@@ -148,7 +154,6 @@ String(x.Password).trim()===p
 
 if(!f){ msg.innerHTML="Invalid Login"; return; }
 
-/* STORE PERMISSIONS (STRICT YES CHECK) */
 localStorage.setItem("login","yes");
 localStorage.setItem("Install",(f.Installation==="Yes")?"Yes":"No");
 localStorage.setItem("IQ",(f.IQ==="Yes")?"Yes":"No");
@@ -203,8 +208,7 @@ let html=`
 </div>
 `;
 
-/* ===== BUTTON CONTROL ===== */
-
+/* BUTTON CONTROL */
 if(localStorage.getItem("Install")==="Yes")
 html+=`<button onclick="openPDF('${a.Installation_PDF}')">Installation Report</button>`;
 
@@ -214,7 +218,6 @@ html+=`<button onclick="openPDF('${a.PMS_PDF}')">PMS Report</button>`;
 if(localStorage.getItem("Cal")==="Yes")
 html+=`<button onclick="openPDF('${a.Calibration_PDF}')">Calibration Report</button>`;
 
-/* IQ OQ PQ */
 if(localStorage.getItem("IQ")==="Yes" ||
    localStorage.getItem("OQ")==="Yes" ||
    localStorage.getItem("PQ")==="Yes"){
@@ -233,7 +236,6 @@ html+=`<button class="small-btn" onclick="openPDF('${a.PQ_PDF}')">PQ</button>`;
 html+=`</div>`;
 }
 
-/* APPROVE BUTTON (STRICT CONTROL) */
 if(localStorage.getItem("Approve")==="Yes"){
 html+=`<button class="approve">APPROVED</button>`;
 }
@@ -253,11 +255,9 @@ function startScanner(){
 const qr=new Html5Qrcode("reader");
 
 Html5Qrcode.getCameras().then(cams=>{
-
 let back=cams.find(c=>c.label.toLowerCase().includes("back")) || cams[cams.length-1];
 
 qr.start(back.id,{fps:10,qrbox:250},txt=>{
-
 qr.stop();
 
 fetch(ASSET_URL)
@@ -269,9 +269,7 @@ showAsset(a);
 });
 
 });
-
 });
-
 }
 
 </script>
