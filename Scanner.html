@@ -6,147 +6,348 @@
 <title>Asset Scan2Maintain</title>
 
 <style>
-body {
-  font-family: Arial;
-  background: #eef2f5;
-  padding: 15px;
+
+body{
+    font-family:Arial;
+    background:#eef2f5;
+    padding:15px;
+    margin:0;
 }
 
-.logo { text-align:center; }
-.logo img { max-height:70px; }
+.logo{
+    text-align:center;
+}
 
-h2 { text-align:center; color:#003366; }
+.logo img{
+    max-height:70px;
+}
 
-#reader { max-width:350px; margin:auto; }
+h2{
+    text-align:center;
+    color:#003366;
+}
 
-.card {
-  background:#fff;
-  padding:15px;
-  border-radius:10px;
-  margin-top:15px;
+#reader{
+    max-width:350px;
+    margin:auto;
+}
+
+.card{
+    background:#fff;
+    padding:15px;
+    border-radius:10px;
+    margin-top:15px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
 }
 
 .row{
-  display:grid;
-  grid-template-columns:140px 10px auto;
-  margin-bottom:5px;
+    display:grid;
+    grid-template-columns:140px 10px auto;
+    margin-bottom:5px;
+    word-break:break-word;
 }
 
 .btn{
-  width:100%;
-  padding:10px;
-  margin-top:6px;
-  background:#0066cc;
-  color:#fff;
-  border:none;
-  border-radius:6px;
+    width:100%;
+    padding:10px;
+    margin-top:6px;
+    background:#0066cc;
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:15px;
+}
+
+.btn:hover{
+    background:#0055aa;
 }
 
 .small-btn{
-  flex:1;
-  padding:8px;
-  background:#28a745;
-  color:#fff;
-  border:none;
-  border-radius:6px;
+    flex:1;
+    padding:8px;
+    background:#28a745;
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.small-btn:hover{
+    background:#218838;
 }
 
 .btn-row{
-  display:flex;
-  gap:5px;
+    display:flex;
+    gap:5px;
+    margin-top:6px;
 }
+
+.expired-box{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    text-align:center;
+    font-family:Arial;
+}
+
+.expired-box h1{
+    color:red;
+    font-size:32px;
+}
+
 </style>
 </head>
 
 <body>
 
 <script>
-/* LOGIN CHECK */
-if(localStorage.getItem("login")!=="yes"){
-  window.location.href="index.html";
+
+/* =========================================
+   LOGIN CHECK
+========================================= */
+
+if(localStorage.getItem("login") !== "yes"){
+    window.location.href = "index.html";
 }
+
+/* =========================================
+   EXPIRY DATE CHECK
+========================================= */
+
+const expiryDate = localStorage.getItem("expiryDate");
+
+if(expiryDate){
+
+    const today = new Date();
+    const expDate = new Date(expiryDate);
+
+    today.setHours(0,0,0,0);
+    expDate.setHours(0,0,0,0);
+
+    if(today > expDate){
+
+        document.body.innerHTML = `
+            <div class="expired-box">
+                <div>
+                    <h1>Please Contact Your System Admin</h1>
+                </div>
+            </div>
+        `;
+
+        throw new Error("User Expired");
+    }
+}
+
 </script>
 
 <div class="logo">
-<img src="logo.jpg">
+    <img src="logo.jpg">
 </div>
 
 <h2>Asset Scan2Maintain</h2>
 
 <div id="reader"></div>
+
 <div id="assetCard" class="card" style="display:none;"></div>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <script>
 
+/* =========================================
+   GOOGLE SHEET URL
+========================================= */
+
 const SHEET_URL =
-"https://opensheet.elk.sh/1SjnaZ-OLmpZ95qr-yoMWvVGd52GCY0ziRaMqjkVq0ZY/Asset_Master";
+"https://opensheet.elk.sh/1SjnaZ-OLmpZ95qr-yoMWvVGd52GCY0ziRaMqjkVq0ZY/Equipment";
+
+/* =========================================
+   OPEN PDF
+========================================= */
 
 function openPDF(url){
-if(!url) return alert("Not available");
-window.open(url,"_blank");
+
+    if(!url || url.trim()==""){
+        alert("Not available");
+        return;
+    }
+
+    window.open(url,"_blank");
 }
+
+/* =========================================
+   SHOW ASSET DETAILS
+========================================= */
 
 function showAsset(a){
 
 let html = `
-<div class="row"><b>Asset</b><div>:</div><div>${a.Asset_No}</div></div>
-<div class="row"><b>Equipment</b><div>:</div><div>${a.Equipment}</div></div>
+
+<div class="row">
+    <b>Asset</b>
+    <div>:</div>
+    <div>${a.Asset_No}</div>
+</div>
+
+<div class="row">
+    <b>Equipment</b>
+    <div>:</div>
+    <div>${a.Equipment}</div>
+</div>
+
 <hr>
+
 `;
 
-/* BUTTON CONTROL */
-if(localStorage.getItem("canInstall")=="Yes")
-html += `<button class="btn" onclick="openPDF('${a.Installation_PDF}')">Installation</button>`;
+/* INSTALLATION */
 
-if(localStorage.getItem("canIQ")=="Yes" ||
-   localStorage.getItem("canOQ")=="Yes" ||
-   localStorage.getItem("canPQ")=="Yes"){
+if(localStorage.getItem("canInstall")=="Yes"){
+
+html += `
+<button class="btn"
+onclick="openPDF('${a.Installation_PDF}')">
+Installation
+</button>
+`;
+
+}
+
+/* IQ OQ PQ */
+
+if(
+localStorage.getItem("canIQ")=="Yes" ||
+localStorage.getItem("canOQ")=="Yes" ||
+localStorage.getItem("canPQ")=="Yes"
+){
 
 html += `<div class="btn-row">`;
 
-if(localStorage.getItem("canIQ")=="Yes")
-html += `<button class="small-btn" onclick="openPDF('${a.IQ_PDF}')">IQ</button>`;
+if(localStorage.getItem("canIQ")=="Yes"){
 
-if(localStorage.getItem("canOQ")=="Yes")
-html += `<button class="small-btn" onclick="openPDF('${a.OQ_PDF}')">OQ</button>`;
+html += `
+<button class="small-btn"
+onclick="openPDF('${a.IQ_PDF}')">
+IQ
+</button>
+`;
 
-if(localStorage.getItem("canPQ")=="Yes")
-html += `<button class="small-btn" onclick="openPDF('${a.PQ_PDF}')">PQ</button>`;
+}
+
+if(localStorage.getItem("canOQ")=="Yes"){
+
+html += `
+<button class="small-btn"
+onclick="openPDF('${a.OQ_PDF}')">
+OQ
+</button>
+`;
+
+}
+
+if(localStorage.getItem("canPQ")=="Yes"){
+
+html += `
+<button class="small-btn"
+onclick="openPDF('${a.PQ_PDF}')">
+PQ
+</button>
+`;
+
+}
 
 html += `</div>`;
+
 }
 
-if(localStorage.getItem("canPMS")=="Yes")
-html += `<button class="btn" onclick="openPDF('${a.PMS_PDF}')">PMS</button>`;
+/* PMS */
 
-if(localStorage.getItem("canCal")=="Yes")
-html += `<button class="btn" onclick="openPDF('${a.Calibration_PDF}')">Calibration</button>`;
+if(localStorage.getItem("canPMS")=="Yes"){
+
+html += `
+<button class="btn"
+onclick="openPDF('${a.PMS_PDF}')">
+PMS
+</button>
+`;
+
+}
+
+/* CALIBRATION */
+
+if(localStorage.getItem("canCal")=="Yes"){
+
+html += `
+<button class="btn"
+onclick="openPDF('${a.Calibration_PDF}')">
+Calibration
+</button>
+`;
+
+}
 
 document.getElementById("assetCard").innerHTML = html;
-document.getElementById("assetCard").style.display="block";
+
+document.getElementById("assetCard").style.display = "block";
+
 }
 
-/* QR */
+/* =========================================
+   QR SCANNER
+========================================= */
+
 const qr = new Html5Qrcode("reader");
 
-Html5Qrcode.getCameras().then(cams => {
-const cam = cams[0];
+Html5Qrcode.getCameras().then(cameras => {
 
-qr.start(cam.id, {fps:10, qrbox:250}, txt => {
+    if(cameras && cameras.length){
 
-qr.stop();
+        const cam = cameras[0];
 
-fetch(SHEET_URL)
-.then(r=>r.json())
-.then(data=>{
-let asset = data.find(x=>x.Asset_No==txt.trim());
-if(!asset) return alert("Not found");
-showAsset(asset);
-});
+        qr.start(
+            cam.id,
+            {
+                fps:10,
+                qrbox:250
+            },
 
-});
+            function(decodedText){
+
+                qr.stop();
+
+                fetch(SHEET_URL)
+
+                .then(res => res.json())
+
+                .then(data => {
+
+                    let asset = data.find(
+                        x => x.Asset_No == decodedText.trim()
+                    );
+
+                    if(!asset){
+
+                        alert("Asset Not Found");
+
+                        return;
+                    }
+
+                    showAsset(asset);
+
+                });
+
+            }
+
+        );
+
+    }
+
+})
+
+.catch(err => {
+
+    alert("Camera Error : " + err);
 
 });
 
