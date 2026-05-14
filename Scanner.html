@@ -44,7 +44,7 @@ body{
   max-width:100%;
 }
 
-/* LOGIN INPUT */
+/* LOGIN */
 .login-input{
   width:100%;
   padding:10px;
@@ -89,7 +89,7 @@ body{
   margin-bottom:5px;
 }
 
-/* BUTTONS */
+/* BUTTON */
 button{
   width:100%;
   padding:12px;
@@ -118,13 +118,12 @@ button{
   font-weight:bold;
 }
 
-/* LOGOUT */
 .logout-btn{
   background:red;
   margin-top:15px;
 }
 
-/* EXPIRED MESSAGE */
+/* EXPIRED */
 .expired-box{
   display:flex;
   justify-content:center;
@@ -143,7 +142,7 @@ button{
 
 <body>
 
-<!-- LOGIN PAGE -->
+<!-- LOGIN -->
 <div id="loginPage" class="card">
 
 <div class="title">Asset Scan2Maintain</div>
@@ -162,7 +161,7 @@ button{
 
 </div>
 
-<!-- SCANNER PAGE -->
+<!-- SCANNER -->
 <div id="scannerPage" style="display:none;">
 
 <div class="card">
@@ -191,7 +190,8 @@ Logout
    CONFIG
 ====================================== */
 
-const SHEET_ID = "1SjnaZ-OLmpZ95qr-yoMWvVGd52GCY0ziRaMqjkVq0ZY";
+const SHEET_ID =
+"1SjnaZ-OLmpZ95qr-yoMWvVGd52GCY0ziRaMqjkVq0ZY";
 
 const LOGIN_URL =
 `https://opensheet.elk.sh/${SHEET_ID}/Users`;
@@ -257,33 +257,66 @@ return;
 }
 
 /* ======================================
+   CLEAR OLD DATA
+====================================== */
+
+localStorage.clear();
+
+/* ======================================
    STORE LOGIN
 ====================================== */
 
 localStorage.setItem("login","yes");
 
-localStorage.setItem("Expiry_Date",f.Expiry_Date || "");
+localStorage.setItem(
+"Expiry_Date",
+f.Expiry_Date || ""
+);
 
-localStorage.setItem("Install",
-(f.Installation==="Yes") ? "Yes" : "No");
+localStorage.setItem(
+"Auto_Logoff_Minutes",
+f.Auto_Logoff_Minutes || "30"
+);
 
-localStorage.setItem("IQ",
-(f.IQ==="Yes") ? "Yes" : "No");
+localStorage.setItem(
+"loginTime",
+Date.now()
+);
 
-localStorage.setItem("OQ",
-(f.OQ==="Yes") ? "Yes" : "No");
+localStorage.setItem(
+"Install",
+(f.Installation==="Yes") ? "Yes" : "No"
+);
 
-localStorage.setItem("PQ",
-(f.PQ==="Yes") ? "Yes" : "No");
+localStorage.setItem(
+"IQ",
+(f.IQ==="Yes") ? "Yes" : "No"
+);
 
-localStorage.setItem("PMS",
-(f.PMS==="Yes") ? "Yes" : "No");
+localStorage.setItem(
+"OQ",
+(f.OQ==="Yes") ? "Yes" : "No"
+);
 
-localStorage.setItem("Cal",
-(f.Calibration==="Yes") ? "Yes" : "No");
+localStorage.setItem(
+"PQ",
+(f.PQ==="Yes") ? "Yes" : "No"
+);
 
-localStorage.setItem("Approve",
-(f.Approve==="Yes") ? "Yes" : "No");
+localStorage.setItem(
+"PMS",
+(f.PMS==="Yes") ? "Yes" : "No"
+);
+
+localStorage.setItem(
+"Cal",
+(f.Calibration==="Yes") ? "Yes" : "No"
+);
+
+localStorage.setItem(
+"Approve",
+(f.Approve==="Yes") ? "Yes" : "No"
+);
 
 showScanner();
 
@@ -292,7 +325,7 @@ showScanner();
 }
 
 /* ======================================
-   AUTO LOGIN
+   AUTO LOGIN CHECK
 ====================================== */
 
 checkAutoLogin();
@@ -303,9 +336,12 @@ if(localStorage.getItem("login") !== "yes"){
 return;
 }
 
-/* CHECK EXPIRY AGAIN */
+/* ======================================
+   CHECK EXPIRY DATE
+====================================== */
 
-let expiryDate = localStorage.getItem("Expiry_Date");
+let expiryDate =
+localStorage.getItem("Expiry_Date");
 
 if(expiryDate){
 
@@ -333,9 +369,67 @@ return;
 
 }
 
+/* ======================================
+   CHECK AUTO LOGOFF
+====================================== */
+
+let loginTime =
+Number(localStorage.getItem("loginTime"));
+
+let autoMinutes =
+Number(localStorage.getItem("Auto_Logoff_Minutes"));
+
+let currentTime = Date.now();
+
+let diffMinutes =
+(currentTime - loginTime) / 1000 / 60;
+
+if(diffMinutes > autoMinutes){
+
+alert("Session Expired. Please Login Again.");
+
+localStorage.clear();
+
+location.reload();
+
+return;
+
+}
+
 showScanner();
 
 }
+
+/* ======================================
+   AUTO LOGOFF TIMER
+====================================== */
+
+setInterval(() => {
+
+if(localStorage.getItem("login") !== "yes"){
+return;
+}
+
+let loginTime =
+Number(localStorage.getItem("loginTime"));
+
+let autoMinutes =
+Number(localStorage.getItem("Auto_Logoff_Minutes"));
+
+let currentTime = Date.now();
+
+let diffMinutes =
+(currentTime - loginTime) / 1000 / 60;
+
+if(diffMinutes > autoMinutes){
+
+alert("Session Expired. Please Login Again.");
+
+logout();
+
+}
+
+}, 30000);
 
 /* ======================================
    LOGOUT
