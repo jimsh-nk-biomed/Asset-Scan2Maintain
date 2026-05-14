@@ -137,6 +137,39 @@ button{
   font-size:30px;
 }
 
+/* LICENSE POPUP */
+.popup-overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.5);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+.popup-box{
+  background:#fff;
+  padding:25px;
+  border-radius:15px;
+  text-align:center;
+  max-width:320px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.3);
+}
+
+.popup-box h2{
+  color:#ff6600;
+  margin-top:0;
+}
+
+.popup-box p{
+  font-size:16px;
+  color:#333;
+}
+
 </style>
 </head>
 
@@ -187,7 +220,7 @@ Logout
 <script>
 
 /* ======================================
-   CONFIG
+CONFIG
 ====================================== */
 
 const SHEET_ID =
@@ -200,7 +233,7 @@ const ASSET_URL =
 `https://opensheet.elk.sh/${SHEET_ID}/Equipment`;
 
 /* ======================================
-   LOGIN
+LOGIN
 ====================================== */
 
 function login(){
@@ -229,7 +262,7 @@ return;
 }
 
 /* ======================================
-   EXPIRY CHECK
+EXPIRY CHECK
 ====================================== */
 
 if(f.Expiry_Date){
@@ -256,15 +289,11 @@ return;
 
 }
 
-/* ======================================
-   CLEAR OLD DATA
-====================================== */
+/* CLEAR OLD DATA */
 
 localStorage.clear();
 
-/* ======================================
-   STORE LOGIN
-====================================== */
+/* STORE LOGIN */
 
 localStorage.setItem("login","yes");
 
@@ -318,14 +347,59 @@ localStorage.setItem(
 (f.Approve==="Yes") ? "Yes" : "No"
 );
 
-showScanner();
+/* SHOW LICENSE POPUP */
+
+showLicensePopup(f.Expiry_Date);
 
 });
 
 }
 
 /* ======================================
-   AUTO LOGIN CHECK
+LICENSE POPUP
+====================================== */
+
+function showLicensePopup(expiryDate){
+
+const popup = document.createElement("div");
+
+popup.className = "popup-overlay";
+
+popup.innerHTML = `
+
+<div class="popup-box">
+
+<h2>License Notice</h2>
+
+<p>
+Your license expires on
+<b>${expiryDate}</b>
+</p>
+
+<p>
+contact today to Renew and to avoid interruption!
+</p>
+
+</div>
+
+`;
+
+document.body.appendChild(popup);
+
+/* SHOW FOR 4 SECONDS */
+
+setTimeout(() => {
+
+popup.remove();
+
+showScanner();
+
+}, 4000);
+
+}
+
+/* ======================================
+AUTO LOGIN
 ====================================== */
 
 checkAutoLogin();
@@ -336,9 +410,7 @@ if(localStorage.getItem("login") !== "yes"){
 return;
 }
 
-/* ======================================
-   CHECK EXPIRY DATE
-====================================== */
+/* CHECK EXPIRY */
 
 let expiryDate =
 localStorage.getItem("Expiry_Date");
@@ -358,7 +430,7 @@ localStorage.clear();
 document.body.innerHTML = `
 <div class="expired-box">
 <div>
-<h1>Please Contact Your System Admin</h1>
+<h1>Your subscription has expired. Please call 9831462013 to regain full access.</h1>
 </div>
 </div>
 `;
@@ -369,9 +441,7 @@ return;
 
 }
 
-/* ======================================
-   CHECK AUTO LOGOFF
-====================================== */
+/* CHECK AUTO LOGOFF */
 
 let loginTime =
 Number(localStorage.getItem("loginTime"));
@@ -396,12 +466,14 @@ return;
 
 }
 
-showScanner();
+/* SHOW POPUP */
+
+showLicensePopup(expiryDate);
 
 }
 
 /* ======================================
-   AUTO LOGOFF TIMER
+AUTO LOGOFF TIMER
 ====================================== */
 
 setInterval(() => {
@@ -432,7 +504,7 @@ logout();
 }, 30000);
 
 /* ======================================
-   LOGOUT
+LOGOUT
 ====================================== */
 
 function logout(){
@@ -444,7 +516,7 @@ location.reload();
 }
 
 /* ======================================
-   SHOW SCANNER
+SHOW SCANNER
 ====================================== */
 
 function showScanner(){
@@ -458,7 +530,7 @@ startScanner();
 }
 
 /* ======================================
-   SHOW ASSET
+SHOW ASSET
 ====================================== */
 
 function showAsset(a){
@@ -504,45 +576,9 @@ let html = `
 </div>
 
 </div>
-
-<div class="box">
-
-<div class="box-title">PMS</div>
-
-<div class="row">
-<div class="label">Done On</div>
-<div class="colon">:</div>
-<div class="value">${a.PMS_Done_On || "-"}</div>
-</div>
-
-<div class="row">
-<div class="label">Due On</div>
-<div class="colon">:</div>
-<div class="value">${a.PMS_Due_On || "-"}</div>
-</div>
-
-</div>
-
-<div class="box">
-
-<div class="box-title">Calibration</div>
-
-<div class="row">
-<div class="label">Done On</div>
-<div class="colon">:</div>
-<div class="value">${a.Calibration_Done_On || "-"}</div>
-</div>
-
-<div class="row">
-<div class="label">Due On</div>
-<div class="colon">:</div>
-<div class="value">${a.Calibration_Due_On || "-"}</div>
-</div>
-
-</div>
 `;
 
-/* INSTALLATION */
+/* INSTALL */
 
 if(localStorage.getItem("Install")==="Yes"){
 
@@ -566,7 +602,7 @@ PMS Report
 
 }
 
-/* CALIBRATION */
+/* CAL */
 
 if(localStorage.getItem("Cal")==="Yes"){
 
@@ -642,7 +678,7 @@ assetCard.innerHTML = html;
 }
 
 /* ======================================
-   OPEN PDF
+OPEN PDF
 ====================================== */
 
 function openPDF(url){
@@ -660,7 +696,7 @@ window.open(url);
 }
 
 /* ======================================
-   START SCANNER
+START SCANNER
 ====================================== */
 
 function startScanner(){
