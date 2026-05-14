@@ -57,12 +57,14 @@ body{
 /* ROW */
 .row{
   display:grid;
-  grid-template-columns:140px 10px auto;
-  margin:6px 0;
+  grid-template-columns:130px 10px auto;
+  margin:8px 0;
+  align-items:start;
 }
 
 .label{
   font-weight:bold;
+  color:#003366;
 }
 
 .colon{
@@ -78,7 +80,7 @@ body{
 .box{
   border:2px solid #007bff;
   border-radius:10px;
-  padding:10px;
+  padding:12px;
   margin-top:12px;
   background:#f4f9ff;
 }
@@ -86,7 +88,8 @@ body{
 .box-title{
   color:#007bff;
   font-weight:bold;
-  margin-bottom:5px;
+  margin-bottom:8px;
+  font-size:16px;
 }
 
 /* BUTTON */
@@ -123,6 +126,10 @@ button{
   margin-top:15px;
 }
 
+.back-btn{
+  background:#ff9800;
+}
+
 /* EXPIRED */
 .expired-box{
   display:flex;
@@ -157,17 +164,10 @@ button{
   border-radius:15px;
   text-align:center;
   max-width:320px;
-  box-shadow:0 2px 10px rgba(0,0,0,0.3);
 }
 
 .popup-box h2{
   color:#ff6600;
-  margin-top:0;
-}
-
-.popup-box p{
-  font-size:16px;
-  color:#333;
 }
 
 </style>
@@ -209,6 +209,10 @@ button{
 
 <div id="assetCard"></div>
 
+<button onclick="scanAgain()" class="back-btn">
+Back To Scanner
+</button>
+
 <button onclick="logout()" class="logout-btn">
 Logout
 </button>
@@ -231,6 +235,8 @@ const LOGIN_URL =
 
 const ASSET_URL =
 `https://opensheet.elk.sh/${SHEET_ID}/Equipment`;
+
+let qr;
 
 /* ======================================
 LOGIN
@@ -261,9 +267,7 @@ return;
 
 }
 
-/* ======================================
-EXPIRY CHECK
-====================================== */
+/* EXPIRY CHECK */
 
 if(f.Expiry_Date){
 
@@ -289,11 +293,11 @@ return;
 
 }
 
-/* CLEAR OLD DATA */
+/* CLEAR */
 
 localStorage.clear();
 
-/* STORE LOGIN */
+/* STORE */
 
 localStorage.setItem("login","yes");
 
@@ -347,8 +351,6 @@ localStorage.setItem(
 (f.Approve==="Yes") ? "Yes" : "No"
 );
 
-/* SHOW LICENSE POPUP */
-
 showLicensePopup(f.Expiry_Date);
 
 });
@@ -377,7 +379,7 @@ Your license expires on
 </p>
 
 <p>
-contact today to Renew and to avoid interruption!
+contact today to renew and to avoid interruption!
 </p>
 
 </div>
@@ -385,8 +387,6 @@ contact today to Renew and to avoid interruption!
 `;
 
 document.body.appendChild(popup);
-
-/* SHOW FOR 10 SECONDS */
 
 setTimeout(() => {
 
@@ -409,8 +409,6 @@ function checkAutoLogin(){
 if(localStorage.getItem("login") !== "yes"){
 return;
 }
-
-/* CHECK EXPIRY */
 
 let expiryDate =
 localStorage.getItem("Expiry_Date");
@@ -441,8 +439,6 @@ return;
 
 }
 
-/* CHECK AUTO LOGOFF */
-
 let loginTime =
 Number(localStorage.getItem("loginTime"));
 
@@ -465,8 +461,6 @@ location.reload();
 return;
 
 }
-
-/* SHOW POPUP */
 
 showLicensePopup(expiryDate);
 
@@ -530,6 +524,18 @@ startScanner();
 }
 
 /* ======================================
+SCAN AGAIN
+====================================== */
+
+function scanAgain(){
+
+assetCard.innerHTML = "";
+
+startScanner();
+
+}
+
+/* ======================================
 SHOW ASSET
 ====================================== */
 
@@ -537,7 +543,11 @@ function showAsset(a){
 
 let html = `
 
+<!-- EQUIPMENT DETAILS -->
+
 <div class="box">
+
+<div class="box-title">Equipment Details</div>
 
 <div class="row">
 <div class="label">Asset No</div>
@@ -573,6 +583,46 @@ let html = `
 <div class="label">Serial No</div>
 <div class="colon">:</div>
 <div class="value">${a.Serial_No}</div>
+</div>
+
+</div>
+
+<!-- PMS DETAILS -->
+
+<div class="box">
+
+<div class="box-title">PMS Details</div>
+
+<div class="row">
+<div class="label">PMS Done On</div>
+<div class="colon">:</div>
+<div class="value">${a.PMS_Done_On || "-"}</div>
+</div>
+
+<div class="row">
+<div class="label">PMS Due On</div>
+<div class="colon">:</div>
+<div class="value">${a.PMS_Due_On || "-"}</div>
+</div>
+
+</div>
+
+<!-- CALIBRATION DETAILS -->
+
+<div class="box">
+
+<div class="box-title">Calibration Details</div>
+
+<div class="row">
+<div class="label">CAL Done On</div>
+<div class="colon">:</div>
+<div class="value">${a.Calibration_Done_On || "-"}</div>
+</div>
+
+<div class="row">
+<div class="label">CAL Due On</div>
+<div class="colon">:</div>
+<div class="value">${a.Calibration_Due_On || "-"}</div>
 </div>
 
 </div>
@@ -701,7 +751,9 @@ START SCANNER
 
 function startScanner(){
 
-const qr = new Html5Qrcode("reader");
+document.getElementById("reader").innerHTML = "";
+
+qr = new Html5Qrcode("reader");
 
 Html5Qrcode.getCameras()
 
@@ -737,6 +789,8 @@ x => x.Asset_No === txt.trim()
 if(!a){
 
 alert("Asset not found");
+
+startScanner();
 
 return;
 
