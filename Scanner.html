@@ -137,6 +137,7 @@ button{
   align-items:center;
   height:100vh;
   text-align:center;
+  padding:20px;
 }
 
 .expired-box h1{
@@ -164,10 +165,17 @@ button{
   border-radius:15px;
   text-align:center;
   max-width:320px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.3);
 }
 
 .popup-box h2{
   color:#ff6600;
+  margin-top:0;
+}
+
+.popup-box p{
+  font-size:16px;
+  line-height:24px;
 }
 
 </style>
@@ -267,7 +275,9 @@ return;
 
 }
 
-/* EXPIRY CHECK */
+/* ======================================
+EXPIRY CHECK
+====================================== */
 
 if(f.Expiry_Date){
 
@@ -282,7 +292,10 @@ if(today > expiry){
 document.body.innerHTML = `
 <div class="expired-box">
 <div>
-<h1>Your subscription has expired. Please call 9831462013 to regain full access.</h1>
+<h1>
+Your subscription has expired.<br>
+Please call 9831462013 to regain full access.
+</h1>
 </div>
 </div>
 `;
@@ -293,11 +306,15 @@ return;
 
 }
 
-/* CLEAR */
+/* ======================================
+CLEAR OLD STORAGE
+====================================== */
 
 localStorage.clear();
 
-/* STORE */
+/* ======================================
+STORE DATA
+====================================== */
 
 localStorage.setItem("login","yes");
 
@@ -351,17 +368,48 @@ localStorage.setItem(
 (f.Approve==="Yes") ? "Yes" : "No"
 );
 
-showLicensePopup(f.Expiry_Date);
+/* ======================================
+SHOW POPUP ONLY IF
+EXPIRY <= 15 DAYS
+====================================== */
+
+showExpiryPopupIfNeeded(f.Expiry_Date);
 
 });
 
 }
 
 /* ======================================
-LICENSE POPUP
+SHOW POPUP IF WITHIN 15 DAYS
 ====================================== */
 
-function showLicensePopup(expiryDate){
+function showExpiryPopupIfNeeded(expiryDate){
+
+if(!expiryDate){
+
+showScanner();
+return;
+
+}
+
+let today = new Date();
+let expiry = new Date(expiryDate);
+
+today.setHours(0,0,0,0);
+expiry.setHours(0,0,0,0);
+
+let diffTime = expiry - today;
+
+let daysLeft = Math.ceil(
+diffTime / (1000 * 60 * 60 * 24)
+);
+
+/* ======================================
+SHOW POPUP ONLY
+WHEN DAYS LEFT <= 15
+====================================== */
+
+if(daysLeft <= 15){
 
 const popup = document.createElement("div");
 
@@ -375,11 +423,14 @@ popup.innerHTML = `
 
 <p>
 Your license expires on
+<br><br>
 <b>${expiryDate}</b>
+<br><br>
+Only ${daysLeft} day(s) remaining.
 </p>
 
 <p>
-contact today to renew and to avoid interruption!
+Contact today to renew and avoid interruption.
 </p>
 
 </div>
@@ -388,6 +439,8 @@ contact today to renew and to avoid interruption!
 
 document.body.appendChild(popup);
 
+/* SHOW FOR 6 SECONDS */
+
 setTimeout(() => {
 
 popup.remove();
@@ -395,6 +448,13 @@ popup.remove();
 showScanner();
 
 }, 4000);
+
+}
+else{
+
+showScanner();
+
+}
 
 }
 
@@ -413,6 +473,10 @@ return;
 let expiryDate =
 localStorage.getItem("Expiry_Date");
 
+/* ======================================
+CHECK EXPIRY
+====================================== */
+
 if(expiryDate){
 
 let today = new Date();
@@ -428,7 +492,10 @@ localStorage.clear();
 document.body.innerHTML = `
 <div class="expired-box">
 <div>
-<h1>Your subscription has expired. Please call 9831462013 to regain full access.</h1>
+<h1>
+Your subscription has expired.<br>
+Please call 9831462013 to regain full access.
+</h1>
 </div>
 </div>
 `;
@@ -438,6 +505,10 @@ return;
 }
 
 }
+
+/* ======================================
+CHECK AUTO LOGOFF
+====================================== */
 
 let loginTime =
 Number(localStorage.getItem("loginTime"));
@@ -462,7 +533,11 @@ return;
 
 }
 
-showLicensePopup(expiryDate);
+/* ======================================
+SHOW POPUP IF NEEDED
+====================================== */
+
+showExpiryPopupIfNeeded(expiryDate);
 
 }
 
