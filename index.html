@@ -2,289 +2,354 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Asset Scan2Maintain</title>
 
-<script src="https://unpkg.com/html5-qrcode"></script>
-
 <style>
+
 body{
-  font-family:Arial;
-  background:#eef2f5;
-  margin:0;
-  padding:15px;
+    font-family:Arial;
+    background:#eef2f5;
+    padding:15px;
+    margin:0;
 }
 
-/* CARD */
+.logo{
+    text-align:center;
+}
+
+.logo img{
+    max-height:70px;
+}
+
+h2{
+    text-align:center;
+    color:#003366;
+}
+
+#reader{
+    max-width:350px;
+    margin:auto;
+}
+
 .card{
-  max-width:380px;
-  margin:auto;
-  background:#fff;
-  padding:15px;
-  border-radius:15px;
-  box-shadow:0 2px 10px rgba(0,0,0,.15);
-  margin-top:15px;
+    background:#fff;
+    padding:15px;
+    border-radius:10px;
+    margin-top:15px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* TITLE */
-.title{
-  text-align:center;
-  font-size:22px;
-  font-weight:bold;
-  color:#003366;
-}
-
-/* LOGO */
-.logo{text-align:center;}
-.logo img{max-width:100%;}
-
-/* LOGIN FIX */
-.login-input{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  border:1px solid #ccc;
-  border-radius:6px;
-  box-sizing:border-box;   /* FIX ALIGNMENT ISSUE */
-}
-
-/* ROW */
 .row{
-  display:grid;
-  grid-template-columns:140px 10px auto;
-  margin:6px 0;
+    display:grid;
+    grid-template-columns:140px 10px auto;
+    margin-bottom:5px;
+    word-break:break-word;
 }
 
-.label{font-weight:bold;}
-.colon{text-align:center;}
-.value{font-size:15px;}
-
-/* BOX (USED FOR ALL SECTIONS NOW) */
-.box{
-  border:2px solid #007bff;
-  border-radius:10px;
-  padding:10px;
-  margin-top:12px;
-  background:#f4f9ff;
+.btn{
+    width:100%;
+    padding:10px;
+    margin-top:6px;
+    background:#0066cc;
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:15px;
 }
 
-.box-title{
-  color:#007bff;
-  font-weight:bold;
-  margin-bottom:5px;
-}
-
-/* BUTTONS */
-button{
-  width:100%;
-  padding:12px;
-  margin-top:8px;
-  border:none;
-  border-radius:10px;
-  background:#1e6bb8;
-  color:white;
-  font-size:15px;
-}
-
-.btn-row{
-  display:flex;
-  gap:5px;
+.btn:hover{
+    background:#0055aa;
 }
 
 .small-btn{
-  flex:1;
-  padding:8px;
-  background:#28a745;
+    flex:1;
+    padding:8px;
+    background:#28a745;
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
 }
 
-.approve{
-  background:#28a745;
-  font-weight:bold;
+.small-btn:hover{
+    background:#218838;
 }
 
-/* LOGOUT AT BOTTOM */
-.logout-btn{
-  background:red;
-  margin-top:15px;
+.btn-row{
+    display:flex;
+    gap:5px;
+    margin-top:6px;
 }
+
+.expired-box{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    text-align:center;
+    font-family:Arial;
+}
+
+.expired-box h1{
+    color:red;
+    font-size:32px;
+}
+
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div id="loginPage" class="card">
-<div class="title">Asset Scan2Maintain</div>
-<div class="logo"><img src="logo.jpg"></div>
+<script>
 
-<input id="username" class="login-input" placeholder="Username">
-<input id="password" type="password" class="login-input" placeholder="Password">
+/* =========================================
+   LOGIN CHECK
+========================================= */
 
-<button onclick="login()">Login</button>
-<div id="msg" style="color:red;text-align:center;"></div>
+if(localStorage.getItem("login") !== "yes"){
+    window.location.href = "index.html";
+}
+
+/* =========================================
+   EXPIRY DATE CHECK
+========================================= */
+
+const expiryDate = localStorage.getItem("expiryDate");
+
+if(expiryDate){
+
+    const today = new Date();
+    const expDate = new Date(expiryDate);
+
+    today.setHours(0,0,0,0);
+    expDate.setHours(0,0,0,0);
+
+    if(today > expDate){
+
+        document.body.innerHTML = `
+            <div class="expired-box">
+                <div>
+                    <h1>Please Contact Your System Admin</h1>
+                </div>
+            </div>
+        `;
+
+        throw new Error("User Expired");
+    }
+}
+
+</script>
+
+<div class="logo">
+    <img src="logo.jpg">
 </div>
 
-<!-- SCANNER -->
-<div id="scannerPage" style="display:none;">
-<div class="card">
-
-<div class="logo"><img src="logo.jpg"></div>
-<div class="title">Asset Scan2Maintain</div>
+<h2>Asset Scan2Maintain</h2>
 
 <div id="reader"></div>
-<div id="assetCard"></div>
 
-<!-- LOGOUT AT BOTTOM -->
-<button onclick="logout()" class="logout-btn">Logout</button>
+<div id="assetCard" class="card" style="display:none;"></div>
 
-</div>
-</div>
+<script src="https://unpkg.com/html5-qrcode"></script>
 
 <script>
 
-/* ===== CONFIG ===== */
-const SHEET_ID="1SjnaZ-OLmpZ95qr-yoMWvVGd52GCY0ziRaMqjkVq0ZY";
-const LOGIN_URL=`https://opensheet.elk.sh/${SHEET_ID}/Users`;
-const ASSET_URL=`https://opensheet.elk.sh/${SHEET_ID}/Equipment`;
+/* =========================================
+   GOOGLE SHEET URL
+========================================= */
 
-/* ===== LOGIN ===== */
-function login(){
-fetch(LOGIN_URL)
-.then(r=>r.json())
-.then(data=>{
+const SHEET_URL =
+"https://opensheet.elk.sh/1SjnaZ-OLmpZ95qr-yoMWvVGd52GCY0ziRaMqjkVq0ZY/Equipment";
 
-let u=username.value.trim();
-let p=password.value.trim();
+/* =========================================
+   OPEN PDF
+========================================= */
 
-let f=data.find(x =>
-String(x.Username).trim()===u &&
-String(x.Password).trim()===p
-);
+function openPDF(url){
 
-if(!f){ msg.innerHTML="Invalid Login"; return; }
+    if(!url || url.trim()==""){
+        alert("Not available");
+        return;
+    }
 
-/* STORE PERMISSIONS */
-localStorage.setItem("login","yes");
-localStorage.setItem("Install",(f.Installation==="Yes")?"Yes":"No");
-localStorage.setItem("IQ",(f.IQ==="Yes")?"Yes":"No");
-localStorage.setItem("OQ",(f.OQ==="Yes")?"Yes":"No");
-localStorage.setItem("PQ",(f.PQ==="Yes")?"Yes":"No");
-localStorage.setItem("PMS",(f.PMS==="Yes")?"Yes":"No");
-localStorage.setItem("Cal",(f.Calibration==="Yes")?"Yes":"No");
-localStorage.setItem("Approve",(f.Approve==="Yes")?"Yes":"No");
-
-showScanner();
-
-});
+    window.open(url,"_blank");
 }
 
-/* AUTO LOGIN */
-if(localStorage.getItem("login")==="yes"){ showScanner(); }
+/* =========================================
+   SHOW ASSET DETAILS
+========================================= */
 
-function logout(){
-localStorage.clear();
-location.reload();
-}
-
-/* ===== SHOW SCANNER ===== */
-function showScanner(){
-loginPage.style.display="none";
-scannerPage.style.display="block";
-startScanner();
-}
-
-/* ===== SHOW ASSET ===== */
 function showAsset(a){
 
-let html=`
+let html = `
 
-<!-- TOP DETAILS IN BLUE BOX -->
-<div class="box">
-<div class="row"><div class="label">Asset No</div><div class="colon">:</div><div class="value">${a.Asset_No}</div></div>
-<div class="row"><div class="label">Department</div><div class="colon">:</div><div class="value">${a.Department}</div></div>
-<div class="row"><div class="label">Equipment</div><div class="colon">:</div><div class="value">${a.Equipment}</div></div>
-<div class="row"><div class="label">Model</div><div class="colon">:</div><div class="value">${a.Model}</div></div>
-<div class="row"><div class="label">Make</div><div class="colon">:</div><div class="value">${a.Make}</div></div>
-<div class="row"><div class="label">Serial No</div><div class="colon">:</div><div class="value">${a.Serial_No}</div></div>
+<div class="row">
+    <b>Asset</b>
+    <div>:</div>
+    <div>${a.Asset_No}</div>
 </div>
 
-<div class="box">
-<div class="box-title">PMS</div>
-<div class="row"><div class="label">Done On</div><div class="colon">:</div><div class="value">${a.PMS_Done_On||"-"}</div></div>
-<div class="row"><div class="label">Due On</div><div class="colon">:</div><div class="value">${a.PMS_Due_On||"-"}</div></div>
+<div class="row">
+    <b>Equipment</b>
+    <div>:</div>
+    <div>${a.Equipment}</div>
 </div>
 
-<div class="box">
-<div class="box-title">Calibration</div>
-<div class="row"><div class="label">Done On</div><div class="colon">:</div><div class="value">${a.Calibration_Done_On||"-"}</div></div>
-<div class="row"><div class="label">Due On</div><div class="colon">:</div><div class="value">${a.Calibration_Due_On||"-"}</div></div>
-</div>
+<hr>
+
 `;
 
-/* BUTTON CONTROL */
-if(localStorage.getItem("Install")==="Yes")
-html+=`<button onclick="openPDF('${a.Installation_PDF}')">Installation Report</button>`;
+/* INSTALLATION */
 
-if(localStorage.getItem("PMS")==="Yes")
-html+=`<button onclick="openPDF('${a.PMS_PDF}')">PMS Report</button>`;
+if(localStorage.getItem("canInstall")=="Yes"){
 
-if(localStorage.getItem("Cal")==="Yes")
-html+=`<button onclick="openPDF('${a.Calibration_PDF}')">Calibration Report</button>`;
+html += `
+<button class="btn"
+onclick="openPDF('${a.Installation_PDF}')">
+Installation
+</button>
+`;
+
+}
 
 /* IQ OQ PQ */
-if(localStorage.getItem("IQ")==="Yes" ||
-   localStorage.getItem("OQ")==="Yes" ||
-   localStorage.getItem("PQ")==="Yes"){
 
-html+=`<div class="btn-row">`;
+if(
+localStorage.getItem("canIQ")=="Yes" ||
+localStorage.getItem("canOQ")=="Yes" ||
+localStorage.getItem("canPQ")=="Yes"
+){
 
-if(localStorage.getItem("IQ")==="Yes")
-html+=`<button class="small-btn" onclick="openPDF('${a.IQ_PDF}')">IQ</button>`;
+html += `<div class="btn-row">`;
 
-if(localStorage.getItem("OQ")==="Yes")
-html+=`<button class="small-btn" onclick="openPDF('${a.OQ_PDF}')">OQ</button>`;
+if(localStorage.getItem("canIQ")=="Yes"){
 
-if(localStorage.getItem("PQ")==="Yes")
-html+=`<button class="small-btn" onclick="openPDF('${a.PQ_PDF}')">PQ</button>`;
+html += `
+<button class="small-btn"
+onclick="openPDF('${a.IQ_PDF}')">
+IQ
+</button>
+`;
 
-html+=`</div>`;
 }
 
-/* APPROVE */
-if(localStorage.getItem("Approve")==="Yes"){
-html+=`<button class="approve">APPROVED</button>`;
+if(localStorage.getItem("canOQ")=="Yes"){
+
+html += `
+<button class="small-btn"
+onclick="openPDF('${a.OQ_PDF}')">
+OQ
+</button>
+`;
+
 }
 
-assetCard.innerHTML=html;
+if(localStorage.getItem("canPQ")=="Yes"){
+
+html += `
+<button class="small-btn"
+onclick="openPDF('${a.PQ_PDF}')">
+PQ
+</button>
+`;
+
 }
 
-/* ===== PDF ===== */
-function openPDF(url){
-if(!url)return alert("PDF not available");
-window.open(url);
+html += `</div>`;
+
 }
 
-/* ===== SCANNER ===== */
-function startScanner(){
+/* PMS */
 
-const qr=new Html5Qrcode("reader");
+if(localStorage.getItem("canPMS")=="Yes"){
 
-Html5Qrcode.getCameras().then(cams=>{
-let back=cams.find(c=>c.label.toLowerCase().includes("back")) || cams[cams.length-1];
+html += `
+<button class="btn"
+onclick="openPDF('${a.PMS_PDF}')">
+PMS
+</button>
+`;
 
-qr.start(back.id,{fps:10,qrbox:250},txt=>{
-qr.stop();
+}
 
-fetch(ASSET_URL)
-.then(r=>r.json())
-.then(data=>{
-let a=data.find(x=>x.Asset_No===txt.trim());
-if(!a)return alert("Asset not found");
-showAsset(a);
+/* CALIBRATION */
+
+if(localStorage.getItem("canCal")=="Yes"){
+
+html += `
+<button class="btn"
+onclick="openPDF('${a.Calibration_PDF}')">
+Calibration
+</button>
+`;
+
+}
+
+document.getElementById("assetCard").innerHTML = html;
+
+document.getElementById("assetCard").style.display = "block";
+
+}
+
+/* =========================================
+   QR SCANNER
+========================================= */
+
+const qr = new Html5Qrcode("reader");
+
+Html5Qrcode.getCameras().then(cameras => {
+
+    if(cameras && cameras.length){
+
+        const cam = cameras[0];
+
+        qr.start(
+            cam.id,
+            {
+                fps:10,
+                qrbox:250
+            },
+
+            function(decodedText){
+
+                qr.stop();
+
+                fetch(SHEET_URL)
+
+                .then(res => res.json())
+
+                .then(data => {
+
+                    let asset = data.find(
+                        x => x.Asset_No == decodedText.trim()
+                    );
+
+                    if(!asset){
+
+                        alert("Asset Not Found");
+
+                        return;
+                    }
+
+                    showAsset(asset);
+
+                });
+
+            }
+
+        );
+
+    }
+
+})
+
+.catch(err => {
+
+    alert("Camera Error : " + err);
+
 });
-});
-});
-}
 
 </script>
 
