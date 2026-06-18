@@ -1,24 +1,236 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asset Scan2Maintain</title>
 
-YOUR CSS
+<script src="https://unpkg.com/html5-qrcode"></script>
 
+<style>
+
+body{
+  font-family:Arial;
+  background:#eef2f5;
+  margin:0;
+  padding:15px;
+}
+
+/* CARD */
+.card{
+  max-width:380px;
+  margin:auto;
+  background:#fff;
+  padding:15px;
+  border-radius:15px;
+  box-shadow:0 2px 10px rgba(0,0,0,.15);
+  margin-top:15px;
+}
+
+/* TITLE */
+.title{
+  text-align:center;
+  font-size:22px;
+  font-weight:bold;
+  color:#003366;
+}
+
+/* LOGO */
+.logo{
+  text-align:center;
+}
+
+.logo img{
+  max-width:100%;
+}
+
+/* LOGIN */
+.login-input{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:1px solid #ccc;
+  border-radius:6px;
+  box-sizing:border-box;
+}
+
+/* ROW */
+.row{
+  display:grid;
+  grid-template-columns:130px 10px auto;
+  margin:8px 0;
+  align-items:start;
+}
+
+.label{
+  font-weight:bold;
+  color:#003366;
+}
+
+.colon{
+  text-align:center;
+}
+
+.value{
+  font-size:15px;
+  word-break:break-word;
+}
+
+/* BOX */
+.box{
+  border:2px solid #007bff;
+  border-radius:10px;
+  padding:12px;
+  margin-top:12px;
+  background:#f4f9ff;
+}
+
+.box-title{
+  color:#007bff;
+  font-weight:bold;
+  margin-bottom:8px;
+  font-size:16px;
+}
+
+/* BUTTON */
+button{
+  width:100%;
+  padding:12px;
+  margin-top:8px;
+  border:none;
+  border-radius:10px;
+  background:#1e6bb8;
+  color:white;
+  font-size:15px;
+  cursor:pointer;
+}
+
+.btn-row{
+  display:flex;
+  gap:5px;
+}
+
+.small-btn{
+  flex:1;
+  padding:8px;
+  background:#28a745;
+}
+
+.approve{
+  background:#28a745;
+  font-weight:bold;
+}
+
+.logout-btn{
+  background:red;
+  margin-top:15px;
+}
+
+.back-btn{
+  background:#ff9800;
+}
+
+/* EXPIRED */
+.expired-box{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  text-align:center;
+  padding:20px;
+}
+
+.expired-box h1{
+  color:red;
+  font-size:30px;
+}
+
+/* LICENSE POPUP */
+.popup-overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.5);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+.popup-box{
+  background:#fff;
+  padding:25px;
+  border-radius:15px;
+  text-align:center;
+  max-width:320px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.3);
+}
+
+.popup-box h2{
+  color:#ff6600;
+  margin-top:0;
+}
+
+.popup-box p{
+  font-size:16px;
+  line-height:24px;
+}
+
+</style>
 </head>
-
 
 <body>
 
+<!-- LOGIN -->
+<div id="loginPage" class="card">
 
-LOGIN PAGE
+<div class="title">Asset Scan2Maintain</div>
 
+<div class="logo">
+<img src="logo.jpg">
+</div>
 
-SCANNER PAGE
+<input id="username" class="login-input" placeholder="Username">
 
+<input id="password" type="password" class="login-input" placeholder="Password">
 
+<button onclick="login()">Login</button>
+
+<div id="msg" style="color:red;text-align:center;margin-top:10px;"></div>
+
+</div>
+
+<!-- SCANNER -->
+<div id="scannerPage" style="display:none;">
+
+<div class="card">
+
+<div class="logo">
+<img src="logo.jpg">
+</div>
+
+<div class="title">Asset Scan2Maintain</div>
+
+<div id="reader"></div>
+
+<div id="assetCard"></div>
+
+<button onclick="scanAgain()" class="back-btn">
+Back To Scanner
+</button>
+
+<button onclick="logout()" class="logout-btn">
+Logout
+</button>
+
+</div>
+
+</div>
 
 <script>
+
 
 
 /* ======================================
