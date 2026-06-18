@@ -544,7 +544,6 @@ alert(
 }
 
 
-
 /* ======================================
 AUTO LOGIN
 ====================================== */
@@ -553,16 +552,12 @@ checkAutoLogin();
 
 function checkAutoLogin(){
 
-  checkAutoLogin();
-
-function checkAutoLogin(){
-
 if(localStorage.getItem("login") !== "yes"){
 return;
 }
 
 let expiryDate =
-localStorage.getItem("Expiry_Date");
+localStorage.getItem("Central_Expiry");
 
 /* ======================================
 CHECK EXPIRY
