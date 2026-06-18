@@ -1,4 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+YOUR CSS
+
+</head>
+
+
+<body>
+
+
+LOGIN PAGE
+
+
+SCANNER PAGE
+
+
+
 <script>
+
 
 /* ======================================
 CONFIGURATION
@@ -1232,6 +1253,267 @@ APPROVED
 
 
 document.getElementById("assetCard").innerHTML = html;
+
+
+}
+
+/* ======================================
+OPEN PDF
+====================================== */
+
+function openPDF(url){
+
+
+if(!url || url.trim()===""){
+
+
+alert(
+"PDF not available"
+);
+
+
+return;
+
+
+}
+
+
+window.open(url,"_blank");
+
+
+}
+
+
+
+/* ======================================
+START QR SCANNER
+====================================== */
+
+function startScanner(){
+
+
+let reader =
+document.getElementById("reader");
+
+
+reader.innerHTML="";
+
+
+
+qr =
+new Html5Qrcode("reader");
+
+
+
+Html5Qrcode.getCameras()
+
+
+.then(cameras=>{
+
+
+if(!cameras || cameras.length===0){
+
+
+alert(
+"No camera found"
+);
+
+
+return;
+
+
+}
+
+
+
+/*
+SELECT BACK CAMERA
+*/
+
+let cameraId =
+cameras.find(c =>
+
+c.label
+.toLowerCase()
+.includes("back")
+
+);
+
+
+
+if(cameraId){
+
+cameraId = cameraId.id;
+
+}
+else{
+
+cameraId =
+cameras[cameras.length-1].id;
+
+}
+
+
+
+
+qr.start(
+
+
+cameraId,
+
+
+{
+
+fps:10,
+
+qrbox:250
+
+
+},
+
+
+
+(decodedText)=>{
+
+
+
+/*
+STOP SCANNER AFTER SUCCESSFUL SCAN
+*/
+
+qr.stop()
+.then(()=>{
+
+
+fetch(ASSET_URL)
+
+
+.then(response=>response.json())
+
+
+.then(data=>{
+
+
+let asset =
+data.find(x =>
+
+String(x.Asset_No).trim()
+===
+
+String(decodedText).trim()
+
+);
+
+
+
+if(!asset){
+
+
+alert(
+"Asset not found"
+);
+
+
+startScanner();
+
+
+return;
+
+
+}
+
+
+
+showAsset(asset);
+
+
+
+})
+
+
+.catch(error=>{
+
+
+console.error(error);
+
+
+alert(
+"Unable to load asset data"
+);
+
+
+
+});
+
+
+
+})
+
+.catch(error=>{
+
+
+console.error(error);
+
+
+});
+
+
+
+
+},
+
+
+
+(errorMessage)=>{
+
+
+// Ignore continuous scanning errors
+
+}
+
+
+
+)
+
+
+
+.catch(error=>{
+
+
+console.error(error);
+
+
+alert(
+"Camera start error : "
++
+error
+);
+
+
+
+});
+
+
+
+})
+
+
+
+.catch(error=>{
+
+
+console.error(error);
+
+
+alert(
+"Camera access error : "
++
+error
+);
+
+
+
+});
 
 
 }
