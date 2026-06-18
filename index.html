@@ -299,37 +299,6 @@ return;
 }
 
 /* ======================================
-EXPIRY CHECK
-====================================== */
-
-if(f.Expiry_Date){
-
-let today = new Date();
-let expiry = new Date(f.Expiry_Date);
-
-today.setHours(0,0,0,0);
-expiry.setHours(0,0,0,0);
-
-if(today > expiry){
-
-document.body.innerHTML = `
-<div class="expired-box">
-<div>
-<h1>
-Your subscription has expired.<br>
-Please call 9831462013 to regain full access.
-</h1>
-</div>
-</div>
-`;
-
-return;
-
-}
-
-}
-
-/* ======================================
 CLEAR OLD STORAGE
 ====================================== */
 
