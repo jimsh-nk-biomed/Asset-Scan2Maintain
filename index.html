@@ -569,60 +569,43 @@ LICENSE EXPIRY POPUP
 
 function showExpiryPopupIfNeeded(expiryDate){
 
-
 if(!expiryDate){
 
 showScanner();
-
 return;
 
 }
+
+
+// Convert DD-MM-YYYY to Date
+
+let parts = expiryDate.split("-");
+
+let expiry = new Date(
+Number(parts[2]),
+Number(parts[1])-1,
+Number(parts[0])
+);
 
 
 let today = new Date();
 
-let expiry = new Date(expiryDate);
-
 
 today.setHours(0,0,0,0);
-
 expiry.setHours(0,0,0,0);
 
 
-
-let difference =
-expiry - today;
-
+let diffTime = expiry - today;
 
 
 let daysLeft = Math.ceil(
-
-difference /
-(1000 * 60 * 60 * 24)
-
+diffTime / (1000*60*60*24)
 );
 
 
 
-/*
-NO EXPIRY DATE
-*/
-
-if(isNaN(daysLeft)){
-
-showScanner();
-
-return;
-
-}
-
-
-
-/*
-EXPIRED
-*/
-
 if(daysLeft < 0){
+
 
 document.body.innerHTML = `
 
@@ -631,13 +614,8 @@ document.body.innerHTML = `
 <div>
 
 <h1>
-
-Subscription Expired
-
-<br><br>
-
+Your subscription has expired.<br><br>
 Please contact Administrator
-
 </h1>
 
 </div>
@@ -659,49 +637,32 @@ SHOW WARNING WITHIN 15 DAYS
 if(daysLeft <= 15){
 
 
-const popup =
-document.createElement("div");
+const popup=document.createElement("div");
 
 
-popup.className =
-"popup-overlay";
+popup.className="popup-overlay";
 
 
-popup.innerHTML = `
+popup.innerHTML=`
 
 <div class="popup-box">
 
-<h2>
-License Notice
-</h2>
-
+<h2>License Notice</h2>
 
 <p>
-
-Your subscription expires on
-
+Your license expires on
 <br><br>
 
 <b>${expiryDate}</b>
 
 <br><br>
 
-${daysLeft} day(s) remaining.
-
+Only ${daysLeft} day(s) remaining.
 </p>
-
-
-<p>
-
-Please renew before expiry.
-
-</p>
-
 
 </div>
 
 `;
-
 
 
 document.body.appendChild(popup);
@@ -710,12 +671,9 @@ document.body.appendChild(popup);
 
 setTimeout(()=>{
 
-
 popup.remove();
 
-
 showScanner();
-
 
 },4000);
 
@@ -733,7 +691,6 @@ showScanner();
 
 
 }
-
 
 
 /* ======================================
