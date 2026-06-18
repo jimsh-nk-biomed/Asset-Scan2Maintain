@@ -443,23 +443,58 @@ CENTRAL LICENSE CHECK
 ====================================== */
 
 
+// ======================================
+// CENTRAL LICENSE CHECK
+// ======================================
+
+
 function checkCentralLicense(){
 
 
-fetch(
-LICENSE_URL+
-"?hospitalID="+HOSPITAL_ID+
-"&key="+LICENSE_KEY
-)
+let url =
+LICENSE_URL +
+"?hospitalID=" +
+encodeURIComponent(HOSPITAL_ID) +
+"&key=" +
+encodeURIComponent(LICENSE_KEY);
 
 
-.then(response => response.json())
+
+fetch(url)
+
+
+.then(response => {
+
+
+if(!response.ok){
+
+throw new Error(
+"License Server Not Responding"
+);
+
+}
+
+
+return response.json();
+
+
+})
 
 
 .then(data => {
 
 
-if(data.status !== "VALID"){
+console.log(
+"License Response:",
+data
+);
+
+
+
+if(
+String(data.status).toUpperCase()
+!== "VALID"
+){
 
 
 document.body.innerHTML = `
@@ -470,7 +505,7 @@ document.body.innerHTML = `
 
 <h1>
 
-Your subscription has expired.<br><br>
+Subscription Expired<br><br>
 
 Please contact Administrator
 
@@ -485,14 +520,11 @@ Please contact Administrator
 
 return;
 
-
 }
 
 
-/*
-LICENSE IS VALID
-SAVE EXPIRY DATE
-*/
+
+// STORE LICENSE EXPIRY
 
 localStorage.setItem(
 "Central_Expiry",
@@ -501,9 +533,7 @@ data.expiry
 
 
 
-/*
-OPEN SCANNER
-*/
+// OPEN SCANNER
 
 showExpiryPopupIfNeeded(
 data.expiry
@@ -517,8 +547,11 @@ data.expiry
 .catch(error=>{
 
 
+console.error(error);
+
+
 alert(
-"License Server Error"
+"Unable to verify license.\nPlease check internet connection."
 );
 
 
@@ -527,14 +560,15 @@ alert(
 
 }
 
-
 /* ======================================
 AUTO LOGIN
 ====================================== */
 
+window.onload=function(){
+
 checkAutoLogin();
 
-function checkAutoLogin(){
+};
 
 if(localStorage.getItem("login") !== "yes"){
 return;
