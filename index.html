@@ -740,24 +740,22 @@ localStorage.getItem("Central_Expiry");
 if(expiryDate){
 
 
-let today =
-new Date();
+let parts = expiryDate.split("-");
+
+let expiry = new Date(
+Number(parts[2]),
+Number(parts[1])-1,
+Number(parts[0])
+);
 
 
-let expiry =
-new Date(expiryDate);
-
+let today = new Date();
 
 
 today.setHours(0,0,0,0);
-
 expiry.setHours(0,0,0,0);
 
-
-
 if(today > expiry){
-
-
 localStorage.clear();
 
 
