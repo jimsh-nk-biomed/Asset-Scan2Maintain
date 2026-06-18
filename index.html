@@ -470,10 +470,9 @@ data
 
 
 if(
-String(data.status).toUpperCase()
-!=="VALID"
-
-){
+String(data.status).trim().toUpperCase()
+!== "VALID"
+)
 
 
 document.body.innerHTML = `
