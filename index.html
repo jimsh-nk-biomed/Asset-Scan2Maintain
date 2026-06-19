@@ -229,13 +229,12 @@ Logout
 
 </div>
 
-</script>
+<script>
 
 /* ======================================
 CONFIGURATION
 ====================================== */
 
-// Hospital Google Sheet
 
 const SHEET_ID =
 "1SjnaZ-OLmpZ95qr-yoMWvVGd52GCY0ziRaMqjkVq0ZY";
@@ -249,58 +248,68 @@ const ASSET_URL =
 `https://opensheet.elk.sh/${SHEET_ID}/Equipment`;
 
 
-// YOUR CENTRAL LICENSE SERVER
+// CENTRAL LICENSE SERVER
 
 const LICENSE_URL =
 "https://script.google.com/macros/s/AKfycbx4iPGSij3YpAKUBMw270RfDGZocIJcnalwfxyuDTKt3e9pIYCp2u0GjmYkGL66tnzt0A/exec";
 
 
-// HOSPITAL LICENSE DETAILS
-
-const HOSPITAL_ID =
-"H001";
-
-
-const LICENSE_KEY =
-"JIMSHNK2026";
-
-
 let qr;
+
 
 
 /* ======================================
 LOGIN
 ====================================== */
 
+
 function login(){
 
-let u = username.value.trim();
-let p = password.value.trim();
+
+let u =
+document.getElementById("username").value.trim();
+
+
+let p =
+document.getElementById("password").value.trim();
+
 
 
 if(u==="" || p===""){
 
-msg.innerHTML =
+
+document.getElementById("msg").innerHTML =
 "Please enter username and password";
 
+
 return;
+
 
 }
 
 
 
+
 fetch(LOGIN_URL)
 
+
+
 .then(response=>response.json())
+
+
 
 .then(data=>{
 
 
-let user = data.find(x =>
 
-String(x.Username).trim() === u &&
+let user = data.find(x=>
 
-String(x.Password).trim() === p
+
+String(x.Username).trim()===u &&
+
+String(x.Password).trim()===p
+
+
 
 );
 
@@ -308,27 +317,44 @@ String(x.Password).trim() === p
 
 if(!user){
 
-msg.innerHTML =
+
+document.getElementById("msg").innerHTML =
 "Invalid Login";
 
+
 return;
+
 
 }
 
 
 
-/* CLEAR OLD SESSION */
+/*
+CLEAR OLD SESSION
+*/
+
 
 localStorage.clear();
 
 
 
-/* SAVE USER RIGHTS */
+/*
+SAVE LOGIN DETAILS
+*/
+
 
 localStorage.setItem(
 "login",
 "yes"
 );
+
+
+
+localStorage.setItem(
+"loginTime",
+Date.now()
+);
+
 
 
 localStorage.setItem(
@@ -337,11 +363,10 @@ user.Auto_Logoff_Minutes || "30"
 );
 
 
-localStorage.setItem(
-"loginTime",
-Date.now()
-);
 
+/*
+SAVE USER PERMISSIONS
+*/
 
 
 localStorage.setItem(
@@ -388,15 +413,40 @@ user.Approve==="Yes" ? "Yes":"No"
 
 
 /*
-AFTER USER LOGIN
-CHECK YOUR CENTRAL LICENSE
+SAVE HOSPITAL LICENSE DETAILS
+FROM USER SHEET
 */
 
-checkCentralLicense();
+
+localStorage.setItem(
+"Hospital_ID",
+user.Hospital_ID
+);
+
+
+
+localStorage.setItem(
+"License_Key",
+user.License_Key
+);
+
+
+
+/*
+NOW CHECK CENTRAL LICENSE
+*/
+
+
+checkCentralLicense(
+user.Hospital_ID,
+user.License_Key
+);
 
 
 
 })
+
+
 
 .catch(error=>{
 
@@ -404,7 +454,7 @@ checkCentralLicense();
 console.error(error);
 
 
-msg.innerHTML =
+document.getElementById("msg").innerHTML =
 "Login Server Error";
 
 
@@ -415,51 +465,90 @@ msg.innerHTML =
 
 
 
+
+
+
+
 /* ======================================
 CENTRAL LICENSE CHECK
 ====================================== */
 
 
-function checkCentralLicense(){
+function checkCentralLicense(
+hospitalID,
+licenseKey
+){
+
 
 
 let url =
+
 LICENSE_URL +
+
 "?hospitalID=" +
-encodeURIComponent(HOSPITAL_ID) +
+
+encodeURIComponent(hospitalID) +
+
 "&key=" +
-encodeURIComponent(LICENSE_KEY);
+
+encodeURIComponent(licenseKey);
+
+
 
 
 
 fetch(url)
 
+
+
 .then(response=>{
+
 
 if(!response.ok){
 
-throw new Error("License Server Error");
+
+throw new Error(
+"License server not responding"
+);
+
 
 }
 
+
+
 return response.json();
 
+
+
 })
+
 
 
 .then(data=>{
 
 
-console.log("Central License Response:",data);
+
+console.log(
+"Central License Response:",
+data
+);
+
+
 
 
 
 if(
-String(data.status).trim().toUpperCase()
-!== "VALID"
+String(data.status)
+.trim()
+.toUpperCase()
+!=="VALID"
+
 ){
 
+
+
 document.body.innerHTML = `
+
 
 <div class="expired-box">
 
@@ -475,72 +564,30 @@ Please contact Administrator
 
 </h1>
 
+
 </div>
 
 </div>
+
 
 `;
+
+
 
 return;
 
-}
-
-
-
-// VALID LICENSE
-
-localStorage.setItem(
-"Central_Expiry",
-data.expiry
-);
-
-
-
-showExpiryPopupIfNeeded(
-data.expiry
-);
-
-
-
-})
-
-
-.catch(error=>{
-
-
-console.error(error);
-
-
-document.body.innerHTML = `
-
-<div class="expired-box">
-
-<div>
-
-<h1>
-
-Unable to verify subscription
-
-<br><br>
-
-Please check internet connection
-
-</h1>
-
-</div>
-
-</div>
-
-`;
-
-});
-
 
 }
 
 
 
-/*SAVE CENTRAL EXPIRY*/
+
+
+
+/*
+SAVE CENTRAL EXPIRY DATE
+*/
+
 
 localStorage.setItem(
 "Central_Expiry",
@@ -550,7 +597,11 @@ data.expiry || ""
 
 
 
-/*OPEN SCANNER*/
+
+/*
+OPEN APP
+*/
+
 
 showExpiryPopupIfNeeded(
 data.expiry
@@ -559,6 +610,7 @@ data.expiry
 
 
 })
+
 
 
 .catch(error=>{
@@ -570,9 +622,11 @@ console.error(error);
 
 document.body.innerHTML = `
 
+
 <div class="expired-box">
 
 <div>
+
 
 <h1>
 
@@ -584,134 +638,205 @@ Please check internet connection
 
 </h1>
 
-</div>
 
 </div>
+
+
+</div>
+
 
 `;
+
+
 
 });
 
 
+
 }
 
+
+
+
+
+
 /* ======================================
-LICENSE EXPIRY POPUP
+LICENSE EXPIRY WARNING
 ====================================== */
+
 
 function showExpiryPopupIfNeeded(expiryDate){
 
+
+
 if(!expiryDate){
 
+
 showScanner();
+
+
 return;
+
 
 }
 
 
-// Convert DD-MM-YYYY to Date
 
-let parts = expiryDate.split("-");
 
-let expiry = new Date(
+let parts =
+expiryDate.split("-");
+
+
+
+let expiry =
+new Date(
+
 Number(parts[2]),
+
 Number(parts[1])-1,
+
 Number(parts[0])
+
 );
 
 
-let today = new Date();
+
+let today =
+new Date();
+
 
 
 today.setHours(0,0,0,0);
+
 expiry.setHours(0,0,0,0);
 
 
-let diffTime = expiry - today;
+
 
 
 let daysLeft = Math.ceil(
-diffTime / (1000*60*60*24)
+
+(expiry-today)
+
+/
+
+(1000*60*60*24)
+
 );
+
+
 
 
 
 if(daysLeft < 0){
 
 
+
 document.body.innerHTML = `
+
 
 <div class="expired-box">
 
 <div>
 
 <h1>
-Your subscription has expired.<br><br>
+
+Your subscription has expired.
+
+<br><br>
+
 Please contact Administrator
+
 </h1>
 
 </div>
 
 </div>
 
+
 `;
 
+
+
 return;
+
 
 }
 
 
 
-/*
-SHOW WARNING WITHIN 15 DAYS
-*/
 
 if(daysLeft <= 15){
 
 
-const popup=document.createElement("div");
+
+let popup =
+document.createElement("div");
 
 
-popup.className="popup-overlay";
+
+popup.className =
+"popup-overlay";
 
 
-popup.innerHTML=`
+
+popup.innerHTML = `
+
 
 <div class="popup-box">
 
-<h2>License Notice</h2>
+
+<h2>
+License Notice
+</h2>
+
 
 <p>
+
 Your license expires on
+
 <br><br>
 
 <b>${expiryDate}</b>
 
+
 <br><br>
 
 Only ${daysLeft} day(s) remaining.
+
+
 </p>
+
 
 </div>
 
+
 `;
+
 
 
 document.body.appendChild(popup);
 
 
 
+
 setTimeout(()=>{
+
 
 popup.remove();
 
+
 showScanner();
+
+
 
 },4000);
 
 
 
 }
+
+
 
 else{
 
@@ -720,6 +845,7 @@ showScanner();
 
 
 }
+
 
 
 }
