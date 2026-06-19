@@ -424,36 +424,25 @@ function checkCentralLicense(){
 
 
 let url =
-
 LICENSE_URL +
-
 "?hospitalID=" +
-
 encodeURIComponent(HOSPITAL_ID) +
-
 "&key=" +
-
 encodeURIComponent(LICENSE_KEY);
 
 
 
 fetch(url)
 
-
 .then(response=>{
-
 
 if(!response.ok){
 
-throw new Error(
-"License Server Error"
-);
+throw new Error("License Server Error");
 
 }
 
-
 return response.json();
-
 
 })
 
@@ -461,17 +450,11 @@ return response.json();
 .then(data=>{
 
 
-console.log(
-"Central License:",
-data
-);
+console.log("Central License Response:",data);
 
 
 
-if({
-"status":"VALID",
-"expiry":"30-07-2026"
- }
+if(
 String(data.status).trim().toUpperCase()
 !== "VALID"
 ){
@@ -502,6 +485,58 @@ return;
 
 }
 
+
+
+// VALID LICENSE
+
+localStorage.setItem(
+"Central_Expiry",
+data.expiry
+);
+
+
+
+showExpiryPopupIfNeeded(
+data.expiry
+);
+
+
+
+})
+
+
+.catch(error=>{
+
+
+console.error(error);
+
+
+document.body.innerHTML = `
+
+<div class="expired-box">
+
+<div>
+
+<h1>
+
+Unable to verify subscription
+
+<br><br>
+
+Please check internet connection
+
+</h1>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+
+}
 
 
 
