@@ -468,7 +468,10 @@ data
 
 
 
-if(
+if({
+"status":"VALID",
+"expiry":"30-07-2026"
+ }
 String(data.status).trim().toUpperCase()
 !== "VALID"
 ){
@@ -502,9 +505,7 @@ return;
 
 
 
-/*
-SAVE CENTRAL EXPIRY
-*/
+/*SAVE CENTRAL EXPIRY*/
 
 localStorage.setItem(
 "Central_Expiry",
@@ -514,9 +515,7 @@ data.expiry || ""
 
 
 
-/*
-OPEN SCANNER
-*/
+/*OPEN SCANNER*/
 
 showExpiryPopupIfNeeded(
 data.expiry
