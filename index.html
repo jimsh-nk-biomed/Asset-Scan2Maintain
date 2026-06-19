@@ -769,88 +769,96 @@ LICENSE CHECK
 ===================================== */
 
 
-function checkCentralLicense(
-
-hospitalID,
-
-licenseKey
-
-){
-
-
-
-if(!hospitalID || !licenseKey){
-
-
-showExpiredPage(
-"License details missing"
-);
-
-
-return;
-
-}
-
-
+function checkCentralLicense(hospitalID,licenseKey){
 
 
 let url =
-
 LICENSE_URL +
-
 "?hospitalID=" +
-
-encodeURIComponent(hospitalID)
-
-+
-
-"&key="
-
-+
-
+encodeURIComponent(hospitalID) +
+"&key=" +
 encodeURIComponent(licenseKey);
 
 
 
-
-
-fetch(url)
-
-
-
-.then(response=>response.json())
+console.log("LICENSE URL:",url);
 
 
 
-.then(data=>{
+fetch(url,{
+method:"GET",
+cache:"no-store"
+})
 
+
+.then(response=>{
 
 
 console.log(
-"LICENSE RESPONSE",
-data
+"LICENSE RESPONSE STATUS:",
+response.status
 );
 
+
+return response.text();
+
+
+})
+
+
+.then(text=>{
+
+
+console.log(
+"LICENSE RAW RESPONSE:",
+text
+);
+
+
+
+let data;
+
+
+try{
+
+data=JSON.parse(text);
+
+}
+
+catch(e){
+
+throw new Error(
+"Invalid JSON from license server"
+);
+
+}
 
 
 
 
 if(
-
-String(data.status)
-.toUpperCase()
-
-!==
-
-"VALID"
-
+String(data.status).trim().toUpperCase()
+!=="VALID"
 ){
 
 
-showExpiredPage(
-"Subscription Expired"
-);
+document.body.innerHTML=`
 
+<div class="expired-box">
+
+<h1>
+
+Subscription Expired
+
+<br><br>
+
+Please contact Administrator
+
+</h1>
+
+</div>
+
+`;
 
 return;
 
@@ -859,38 +867,14 @@ return;
 
 
 
-
-
-/*
-SAVE LICENSE INFORMATION
-*/
-
-
 localStorage.setItem(
-"Central_Expiry",
-data.expiry || ""
-);
-
-
-
-localStorage.setItem(
-"Days_Left",
-data.daysLeft || ""
-);
-
-
-
-
-
-/*
-CHECK EXPIRY
-
-*/
-
-
-showExpiryPopupIfNeeded(
+"License_Days",
 data.days
 );
+
+
+
+showExpiryPopupIfNeeded(data.days);
 
 
 
@@ -900,23 +884,35 @@ data.days
 .catch(error=>{
 
 
-console.error(error);
-
-
-showExpiredPage(
-"Unable to verify subscription"
+console.error(
+"LICENSE ERROR:",
+error
 );
 
+
+
+document.body.innerHTML=`
+
+<div class="expired-box">
+
+<h1>
+
+Unable to verify subscription
+
+<br><br>
+
+${error.message}
+
+</h1>
+
+</div>
+
+`;
 
 });
 
 
 }
-
-
-
-
-
 
 
 /* =====================================
