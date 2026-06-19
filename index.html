@@ -423,7 +423,6 @@ CENTRAL LICENSE CHECK
 function checkCentralLicense(){
 
 
-
 let url =
 
 LICENSE_URL +
@@ -472,8 +471,7 @@ data
 if(
 String(data.status).trim().toUpperCase()
 !== "VALID"
-)
-
+){
 
 document.body.innerHTML = `
 
@@ -497,11 +495,10 @@ Please contact Administrator
 
 `;
 
-
 return;
 
-
 }
+
 
 
 
@@ -516,8 +513,9 @@ data.expiry || ""
 
 
 
+
 /*
-CHECK EXPIRY WARNING
+OPEN SCANNER
 */
 
 showExpiryPopupIfNeeded(
@@ -533,6 +531,7 @@ data.expiry
 
 
 console.error(error);
+
 
 
 document.body.innerHTML = `
