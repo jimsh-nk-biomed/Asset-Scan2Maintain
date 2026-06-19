@@ -15,10 +15,9 @@
 
 <style>
 
-
 body{
 
-font-family:Arial;
+font-family:Arial, sans-serif;
 
 background:#eef2f5;
 
@@ -37,13 +36,13 @@ max-width:380px;
 
 margin:auto;
 
-background:white;
+background:#ffffff;
 
 padding:15px;
 
 border-radius:15px;
 
-box-shadow:0 2px 10px rgba(0,0,0,.15);
+box-shadow:0 2px 10px rgba(0,0,0,0.15);
 
 margin-top:15px;
 
@@ -63,7 +62,7 @@ font-weight:bold;
 
 color:#003366;
 
-margin-bottom:10px;
+margin-bottom:15px;
 
 }
 
@@ -90,13 +89,13 @@ height:auto;
 
 
 
-/* LOGIN INPUT */
+/* INPUT */
 
 .login-input{
 
 width:100%;
 
-padding:10px;
+padding:11px;
 
 margin-top:10px;
 
@@ -137,7 +136,6 @@ cursor:pointer;
 }
 
 
-
 .back-btn{
 
 background:#ff9800;
@@ -145,13 +143,11 @@ background:#ff9800;
 }
 
 
-
 .logout-btn{
 
 background:red;
 
 }
-
 
 
 .approve{
@@ -164,7 +160,7 @@ font-weight:bold;
 
 
 
-/* SCANNER */
+/* HIDE SCANNER INITIALLY */
 
 #scannerPage{
 
@@ -174,7 +170,7 @@ display:none;
 
 
 
-/* ROW */
+/* ASSET ROW */
 
 .row{
 
@@ -247,7 +243,7 @@ margin-bottom:8px;
 
 
 
-/* SMALL BUTTON */
+/* IQ OQ PQ BUTTON */
 
 .btn-row{
 
@@ -263,8 +259,6 @@ gap:5px;
 flex:1;
 
 background:#28a745;
-
-padding:8px;
 
 }
 
@@ -301,7 +295,6 @@ font-size:28px;
 
 
 /* LICENSE POPUP */
-
 
 .popup-overlay{
 
@@ -363,10 +356,9 @@ color:#ff6600;
 <body>
 
 
-
-<!-- ==========================
+<!-- =========================
 LOGIN PAGE
-========================== -->
+========================= -->
 
 
 <div id="loginPage" class="card">
@@ -379,11 +371,13 @@ LOGIN PAGE
 </div>
 
 
+
 <div class="title">
 
 Asset Scan2Maintain
 
 </div>
+
 
 
 
@@ -394,6 +388,8 @@ id="username"
 class="login-input"
 
 placeholder="Username">
+
+
 
 
 
@@ -409,6 +405,8 @@ placeholder="Password">
 
 
 
+
+
 <button onclick="login()">
 
 Login
@@ -417,9 +415,7 @@ Login
 
 
 
-<div
-
-id="msg"
+<div id="msg"
 
 style="color:red;text-align:center;margin-top:10px;">
 
@@ -433,9 +429,9 @@ style="color:red;text-align:center;margin-top:10px;">
 
 
 
-<!-- ==========================
+<!-- =========================
 SCANNER PAGE
-========================== -->
+========================= -->
 
 
 <div id="scannerPage">
@@ -444,11 +440,13 @@ SCANNER PAGE
 <div class="card">
 
 
+
 <div class="logo">
 
 <img src="logo.jpg">
 
 </div>
+
 
 
 <div class="title">
@@ -459,11 +457,13 @@ Asset Scan2Maintain
 
 
 
+
 <div id="reader"></div>
 
 
 
 <div id="assetCard"></div>
+
 
 
 
@@ -476,6 +476,7 @@ class="back-btn">
 Back To Scanner
 
 </button>
+
 
 
 
@@ -496,7 +497,9 @@ Logout
 
 </div>
 
-  <script>
+
+
+<script>
 
 
 /* =====================================
@@ -508,8 +511,10 @@ const SHEET_ID =
 "1SjnaZ-OLmpZ95qr-yoMWvVGd52GCY0ziRaMqjkVq0ZY";
 
 
+
 const LOGIN_URL =
 `https://opensheet.elk.sh/${SHEET_ID}/Users`;
+
 
 
 const ASSET_URL =
@@ -517,17 +522,21 @@ const ASSET_URL =
 
 
 
-/* CENTRAL LICENSE SERVER */
-
 const LICENSE_URL =
 "https://script.google.com/macros/s/AKfycbx4iPGSij3YpAKUBMw270RfDGZocIJcnalwfxyuDTKt3e9pIYCp2u0GjmYkGL66tnzt0A/exec";
 
 
 
-let qr;
+let qr=null;
+
+
+/* STORE EQUIPMENT DATA */
+
+let equipmentData=[];
 
 
 
+</script>
 /* =====================================
 LOGIN FUNCTION
 ===================================== */
@@ -536,16 +545,16 @@ LOGIN FUNCTION
 function login(){
 
 
-let u =
+let username =
 document.getElementById("username").value.trim();
 
 
-let p =
+let password =
 document.getElementById("password").value.trim();
 
 
 
-if(u==="" || p===""){
+if(username==="" || password===""){
 
 
 document.getElementById("msg").innerHTML =
@@ -558,47 +567,44 @@ return;
 
 
 
+document.getElementById("msg").innerHTML =
+"Checking login...";
+
+
+
+
 
 fetch(LOGIN_URL)
-
 
 
 .then(response=>response.json())
 
 
-
-.then(data=>{
-
+.then(users=>{
 
 
-console.log("USER DATA:",data);
+let user = users.find(u =>
 
 
-
-let user = data.find(x=>
-
-
-String(x.Username || "")
+String(u.Username || "")
 .trim()
 .toLowerCase()
 ===
 
-u.trim().toLowerCase()
+username.toLowerCase()
 
 
 &&
 
 
-String(x.Password || "")
+String(u.Password || "")
 .trim()
 ===
 
-p.trim()
-
+password
 
 
 );
-
 
 
 
@@ -606,7 +612,7 @@ if(!user){
 
 
 document.getElementById("msg").innerHTML =
-"Invalid Login";
+"Invalid Username or Password";
 
 
 return;
@@ -618,18 +624,12 @@ return;
 
 
 /* ===============================
-CLEAR OLD SESSION
+SAVE USER SESSION
 =============================== */
 
 
 localStorage.clear();
 
-
-
-
-/* ===============================
-SAVE LOGIN SESSION
-=============================== */
 
 
 localStorage.setItem(
@@ -655,76 +655,58 @@ user.Auto_Logoff_Minutes || "30"
 
 
 
-
 /* ===============================
-SAVE USER RIGHTS
+USER RIGHTS
 =============================== */
 
 
 localStorage.setItem(
 "Install",
-user.Installation==="Yes"
-?"Yes":"No"
+user.Installation==="Yes" ? "Yes":"No"
 );
-
 
 
 localStorage.setItem(
 "IQ",
-user.IQ==="Yes"
-?"Yes":"No"
+user.IQ==="Yes" ? "Yes":"No"
 );
-
 
 
 localStorage.setItem(
 "OQ",
-user.OQ==="Yes"
-?"Yes":"No"
+user.OQ==="Yes" ? "Yes":"No"
 );
-
 
 
 localStorage.setItem(
 "PQ",
-user.PQ==="Yes"
-?"Yes":"No"
+user.PQ==="Yes" ? "Yes":"No"
 );
-
 
 
 localStorage.setItem(
 "PMS",
-user.PMS==="Yes"
-?"Yes":"No"
+user.PMS==="Yes" ? "Yes":"No"
 );
-
 
 
 localStorage.setItem(
 "Cal",
-user.Calibration==="Yes"
-?"Yes":"No"
+user.Calibration==="Yes" ? "Yes":"No"
 );
-
 
 
 localStorage.setItem(
 "Approve",
-user.Approve==="Yes"
-?"Yes":"No"
+user.Approve==="Yes" ? "Yes":"No"
 );
-
 
 
 
 
 
 /* ===============================
-SAVE HOSPITAL LICENSE DETAILS
-
-FROM USER SHEET
-
+LICENSE DETAILS
 =============================== */
 
 
@@ -743,23 +725,22 @@ user.License_Key || ""
 
 
 
-
-
 /* ===============================
-CHECK LICENSE
-
+CHECK SUBSCRIPTION
 =============================== */
 
 
 checkCentralLicense(
+
 user.Hospital_ID,
+
 user.License_Key
+
 );
 
 
 
 })
-
 
 
 .catch(error=>{
@@ -769,11 +750,11 @@ console.error(error);
 
 
 document.getElementById("msg").innerHTML =
-
-"Unable to connect login server";
+"Login server error";
 
 
 });
+
 
 
 }
@@ -783,8 +764,10 @@ document.getElementById("msg").innerHTML =
 
 
 
+
+
 /* =====================================
-CENTRAL LICENSE CHECK
+LICENSE CHECK
 ===================================== */
 
 
@@ -795,6 +778,21 @@ hospitalID,
 licenseKey
 
 ){
+
+
+
+if(!hospitalID || !licenseKey){
+
+
+showExpiredPage(
+"License details missing"
+);
+
+
+return;
+
+}
+
 
 
 
@@ -822,34 +820,19 @@ fetch(url)
 
 
 
-.then(response=>{
-
-
-if(!response.ok){
-
-
-throw new Error(
-"License server error"
-);
-
-
-}
-
-
-return response.json();
-
-
-})
+.then(response=>response.json())
 
 
 
 .then(data=>{
 
 
+
 console.log(
-"CENTRAL LICENSE:",
+"LICENSE RESPONSE",
 data
 );
+
 
 
 
@@ -857,7 +840,6 @@ data
 if(
 
 String(data.status)
-.trim()
 .toUpperCase()
 
 !==
@@ -867,32 +849,9 @@ String(data.status)
 ){
 
 
-
-document.body.innerHTML = `
-
-
-<div class="expired-box">
-
-<div>
-
-<h1>
-
-Subscription Expired
-
-<br><br>
-
-Please contact Administrator
-
-</h1>
-
-</div>
-
-</div>
-
-
-
-`;
-
+showExpiredPage(
+"Subscription Expired"
+);
 
 
 return;
@@ -904,29 +863,44 @@ return;
 
 
 
-/* SAVE EXPIRY DATE */
+/*
+SAVE LICENSE INFORMATION
+*/
 
 
 localStorage.setItem(
-
 "Central_Expiry",
-
 data.expiry || ""
+);
 
+
+
+localStorage.setItem(
+"Days_Left",
+data.daysLeft || ""
 );
 
 
 
 
 
-/* OPEN EXPIRY CHECK */
+/*
+CHECK EXPIRY
+
+*/
 
 
 showExpiryPopupIfNeeded(
+
 data.expiry,
+
 data.daysLeft
+
 );
 
+
+
+})
 
 
 .catch(error=>{
@@ -935,63 +909,169 @@ data.daysLeft
 console.error(error);
 
 
-
-document.body.innerHTML = `
-
-
-<div class="expired-box">
-
-<div>
-
-<h1>
-
-Unable to verify subscription
-
-<br><br>
-
-Please check internet connection
-
-</h1>
-
-
-</div>
-
-</div>
-
-
-
-`;
-
+showExpiredPage(
+"Unable to verify subscription"
+);
 
 
 });
 
 
-
 }
+
+
+
+
+
+
+
 /* =====================================
-LICENSE EXPIRY CHECK
+EXPIRY CHECK
 ===================================== */
 
 
-function showExpiryPopupIfNeeded(expiryDate,daysLeft){
+function showExpiryPopupIfNeeded(
+
+expiryDate,
+
+daysLeft
+
+){
 
 
-daysLeft = Number(daysLeft);
+
+daysLeft =
+Number(daysLeft);
+
+
+
+
+
+if(isNaN(daysLeft)){
+
+
+daysLeft=0;
+
+
+}
+
 
 
 
 if(daysLeft < 0){
+
+
+showExpiredPage(
+"Subscription Expired"
+);
+
+
+return;
+
+
+}
+
+
+
+
+
+if(daysLeft <=15){
+
+
+
+let popup=document.createElement("div");
+
+
+popup.className="popup-overlay";
+
+
+
+popup.innerHTML=`
+
+<div class="popup-box">
+
+<h2>
+License Notice
+</h2>
+
+
+<p>
+
+License expiry date:
+
+<br><br>
+
+<b>${expiryDate}</b>
+
+<br><br>
+
+${daysLeft} days remaining
+
+</p>
+
+
+</div>
+
+`;
+
+
+
+document.body.appendChild(popup);
+
+
+
+setTimeout(()=>{
+
+
+popup.remove();
+
+
+openApplication();
+
+
+
+},3000);
+
+
+
+}
+
+else{
+
+
+openApplication();
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+/* =====================================
+EXPIRED SCREEN
+===================================== */
+
+
+function showExpiredPage(message){
+
 
 
 document.body.innerHTML=`
 
 <div class="expired-box">
+
 <div>
 
 <h1>
 
-Your subscription has expired.
+${message}
 
 <br><br>
 
@@ -999,246 +1079,12 @@ Please contact Administrator
 
 </h1>
 
-</div>
-</div>
-
-`;
-
-return;
-
-}
-
-
-
-
-if(daysLeft <=15){
-
-
-
-let popup=document.createElement("div");
-
-
-popup.className="popup-overlay";
-
-
-
-popup.innerHTML=`
-
-<div class="popup-box">
-
-<h2>
-License Notice
-</h2>
-
-
-<p>
-
-Your license expires on
-
-<br><br>
-
-<b>${expiryDate}</b>
-
-
-<br><br>
-
-Only ${daysLeft} day(s) remaining.
-
-</p>
-
-</div>
-
-`;
-
-
-
-document.body.appendChild(popup);
-
-
-
-setTimeout(()=>{
-
-popup.remove();
-
-showScanner();
-
-},4000);
-
-
-
-}
-
-else{
-
-
-showScanner();
-
-
-}
-
-
-}
-
-
-let parts = expiryDate.split("-");
-
-
-let expiry = new Date(
-
-Number(parts[2]),
-
-Number(parts[1])-1,
-
-Number(parts[0])
-
-);
-
-
-
-let today = new Date();
-
-
-
-today.setHours(0,0,0,0);
-
-expiry.setHours(0,0,0,0);
-
-
-
-let daysLeft = Math.ceil(
-
-(expiry - today)
-
-/
-
-(1000*60*60*24)
-
-);
-
-
-
-
-
-if(daysLeft < 0){
-
-
-
-document.body.innerHTML = `
-
-
-<div class="expired-box">
-
-<div>
-
-<h1>
-
-Your subscription has expired.
-
-<br><br>
-
-Please contact Administrator
-
-</h1>
 
 </div>
 
 </div>
 
-
 `;
-
-
-
-return;
-
-}
-
-
-
-
-
-
-/* SHOW WARNING BEFORE 15 DAYS */
-
-
-if(daysLeft <=15){
-
-
-
-let popup=document.createElement("div");
-
-
-popup.className="popup-overlay";
-
-
-
-popup.innerHTML=`
-
-
-<div class="popup-box">
-
-
-<h2>
-
-License Notice
-
-</h2>
-
-
-
-<p>
-
-Your license expires on
-
-<br><br>
-
-<b>${expiryDate}</b>
-
-
-<br><br>
-
-
-Only ${daysLeft} day(s) remaining.
-
-
-</p>
-
-
-</div>
-
-
-`;
-
-
-
-document.body.appendChild(popup);
-
-
-
-
-setTimeout(()=>{
-
-
-popup.remove();
-
-
-showScanner();
-
-
-
-},4000);
-
-
-
-}
-
-else{
-
-
-showScanner();
-
-
-}
 
 
 
@@ -1250,11 +1096,29 @@ showScanner();
 
 
 /* =====================================
-AUTO LOGIN AFTER REFRESH
+OPEN APPLICATION AFTER VALIDATION
+===================================== */
+
+
+function openApplication(){
+
+
+loadEquipment();
+
+
+}
+
+
+
+
+
+/* =====================================
+AUTO LOGIN CHECK
 ===================================== */
 
 
 window.onload=function(){
+
 
 
 if(
@@ -1266,7 +1130,7 @@ localStorage.getItem("login")
 ){
 
 
-checkAutoLogin();
+checkSession();
 
 
 }
@@ -1279,285 +1143,84 @@ checkAutoLogin();
 
 
 
+function checkSession(){
 
 
-function checkAutoLogin(){
 
+let loginTime =
+Number(localStorage.getItem("loginTime"));
 
 
-let expiryDate =
 
-localStorage.getItem(
-"Central_Expiry"
-);
+let auto =
+Number(localStorage.getItem("Auto_Logoff_Minutes"));
 
 
 
 
-/* ==============================
-CHECK EXPIRY
-============================== */
+if(loginTime && auto){
 
 
-if(expiryDate){
 
-
-let parts =
-expiryDate.split("-");
-
-
-
-let expiry = new Date(
-
-Number(parts[2]),
-
-Number(parts[1])-1,
-
-Number(parts[0])
-
-);
-
-
-
-let today=new Date();
-
-
-
-today.setHours(0,0,0,0);
-
-expiry.setHours(0,0,0,0);
-
-
-
-if(today > expiry){
-
-
-
-localStorage.clear();
-
-
-
-document.body.innerHTML=`
-
-
-<div class="expired-box">
-
-<div>
-
-<h1>
-
-Your subscription has expired.
-
-<br><br>
-
-Please contact Administrator
-
-</h1>
-
-</div>
-
-</div>
-
-
-`;
-
-
-
-return;
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-/* ==============================
-AUTO LOGOUT CHECK
-============================== */
-
-
-let loginTime = Number(
-
-localStorage.getItem(
-"loginTime"
-
-)
-
-);
-
-
-
-let autoMinutes = Number(
-
-localStorage.getItem(
-"Auto_Logoff_Minutes"
-
-)
-
-);
-
-
-
-if(loginTime && autoMinutes){
-
-
-
-let usedMinutes =
+let used =
 
 (Date.now()-loginTime)
 
 /
 
-1000
+60000;
 
-/
 
-60;
 
 
-
-if(usedMinutes > autoMinutes){
-
-
-
-alert(
-"Session expired. Please login again."
-);
-
-
-
-localStorage.clear();
-
-
-location.reload();
-
-
-return;
-
-
-}
-
-
-
-}
-
-
-
-
-
-/* ==============================
-VALID SESSION
-============================== */
-
-
-showScanner();
-
-
-
-}
-
-
-
-
-
-
-
-/* =====================================
-AUTO LOGOUT TIMER
-===================================== */
-
-
-setInterval(()=>{
-
-
-
-if(
-
-localStorage.getItem("login")
-
-!=="yes"
-
-){
-
-
-return;
-
-
-}
-
-
-
-let loginTime = Number(
-
-localStorage.getItem(
-"loginTime"
-
-)
-
-);
-
-
-
-let autoMinutes = Number(
-
-localStorage.getItem(
-"Auto_Logoff_Minutes"
-
-)
-
-);
-
-
-
-if(!loginTime || !autoMinutes){
-
-return;
-
-}
-
-
-
-let usedMinutes =
-
-(Date.now()-loginTime)
-
-/
-
-1000
-
-/
-
-60;
-
-
-
-
-if(usedMinutes > autoMinutes){
-
-
-
-alert(
-"Session expired. Please login again."
-);
-
+if(used > auto){
 
 
 logout();
 
 
+return;
+
 
 }
 
 
 
-},30000);
+}
 
+
+
+
+
+/*
+
+Recheck license before opening
+
+*/
+
+
+let hospital =
+localStorage.getItem("Hospital_ID");
+
+
+
+let key =
+localStorage.getItem("License_Key");
+
+
+
+
+checkCentralLicense(
+
+hospital,
+
+key
+
+);
+
+
+
+}
 
 
 
@@ -1572,11 +1235,68 @@ LOGOUT
 function logout(){
 
 
-
 localStorage.clear();
 
 
 location.reload();
+
+
+}
+  /* =====================================
+LOAD EQUIPMENT DATA ONCE
+===================================== */
+
+
+function loadEquipment(){
+
+
+document.getElementById("msg").innerHTML =
+"Loading equipment database...";
+
+
+
+fetch(ASSET_URL)
+
+
+
+.then(response=>response.json())
+
+
+
+.then(data=>{
+
+
+equipmentData=data;
+
+
+
+console.log(
+"Equipment Loaded:",
+equipmentData.length
+);
+
+
+
+openScannerPage();
+
+
+
+})
+
+
+
+.catch(error=>{
+
+
+console.error(error);
+
+
+alert(
+"Unable to load equipment database"
+);
+
+
+});
 
 
 
@@ -1587,12 +1307,13 @@ location.reload();
 
 
 
+
 /* =====================================
-SHOW SCANNER PAGE
+OPEN SCANNER PAGE
 ===================================== */
 
 
-function showScanner(){
+function openScannerPage(){
 
 
 
@@ -1615,6 +1336,8 @@ startScanner();
 
 
 
+
+
 /* =====================================
 SCAN AGAIN
 ===================================== */
@@ -1627,11 +1350,20 @@ function scanAgain(){
 document.getElementById("assetCard").innerHTML="";
 
 
+
 startScanner();
 
 
 
 }
+
+
+
+
+
+
+
+
 /* =====================================
 SHOW ASSET DETAILS
 ===================================== */
@@ -1640,60 +1372,140 @@ SHOW ASSET DETAILS
 function showAsset(a){
 
 
-let html = `
+
+let html=`
 
 
 <div class="box">
 
 
 <div class="box-title">
+
 Equipment Details
+
 </div>
+
 
 
 <div class="row">
-<div class="label">Asset No</div>
-<div class="colon">:</div>
-<div class="value">${a.Asset_No || "-"}</div>
+
+<div class="label">
+Asset No
 </div>
+
+<div class="colon">
+:
+</div>
+
+<div class="value">
+${a.Asset_No || "-"}
+</div>
+
+</div>
+
+
 
 
 <div class="row">
-<div class="label">Department</div>
-<div class="colon">:</div>
-<div class="value">${a.Department || "-"}</div>
+
+<div class="label">
+Department
 </div>
+
+<div class="colon">
+:
+</div>
+
+<div class="value">
+${a.Department || "-"}
+</div>
+
+</div>
+
+
+
 
 
 <div class="row">
-<div class="label">Equipment</div>
-<div class="colon">:</div>
-<div class="value">${a.Equipment || "-"}</div>
+
+<div class="label">
+Equipment
 </div>
+
+<div class="colon">
+:
+</div>
+
+<div class="value">
+${a.Equipment || "-"}
+</div>
+
+</div>
+
+
+
 
 
 <div class="row">
-<div class="label">Model</div>
-<div class="colon">:</div>
-<div class="value">${a.Model || "-"}</div>
+
+<div class="label">
+Make
 </div>
+
+<div class="colon">
+:
+</div>
+
+<div class="value">
+${a.Make || "-"}
+</div>
+
+</div>
+
+
+
 
 
 <div class="row">
-<div class="label">Make</div>
-<div class="colon">:</div>
-<div class="value">${a.Make || "-"}</div>
+
+<div class="label">
+Model
 </div>
+
+<div class="colon">
+:
+</div>
+
+<div class="value">
+${a.Model || "-"}
+</div>
+
+</div>
+
+
+
 
 
 <div class="row">
-<div class="label">Serial No</div>
-<div class="colon">:</div>
-<div class="value">${a.Serial_No || "-"}</div>
+
+<div class="label">
+Serial No
+</div>
+
+<div class="colon">
+:
+</div>
+
+<div class="value">
+${a.Serial_No || "-"}
+</div>
+
 </div>
 
 
+
 </div>
+
 
 
 
@@ -1704,25 +1516,55 @@ Equipment Details
 
 
 <div class="box-title">
+
 PMS Details
+
 </div>
+
+
 
 
 <div class="row">
-<div class="label">PMS Done On</div>
-<div class="colon">:</div>
-<div class="value">${a.PMS_Done_On || "-"}</div>
+
+<div class="label">
+PMS Done On
 </div>
+
+<div class="colon">
+:
+</div>
+
+<div class="value">
+${a.PMS_Done_On || "-"}
+</div>
+
+</div>
+
+
+
 
 
 <div class="row">
-<div class="label">PMS Due On</div>
-<div class="colon">:</div>
-<div class="value">${a.PMS_Due_On || "-"}</div>
+
+<div class="label">
+PMS Due On
+</div>
+
+<div class="colon">
+:
+</div>
+
+<div class="value">
+${a.PMS_Due_On || "-"}
+</div>
+
 </div>
 
 
+
 </div>
+
+
 
 
 
@@ -1733,25 +1575,56 @@ PMS Details
 
 
 <div class="box-title">
+
 Calibration Details
+
 </div>
+
+
+
 
 
 <div class="row">
-<div class="label">CAL Done On</div>
-<div class="colon">:</div>
-<div class="value">${a.Calibration_Done_On || "-"}</div>
+
+<div class="label">
+CAL Done On
 </div>
+
+<div class="colon">
+:
+</div>
+
+<div class="value">
+${a.Calibration_Done_On || "-"}
+</div>
+
+</div>
+
+
+
+
 
 
 <div class="row">
-<div class="label">CAL Due On</div>
-<div class="colon">:</div>
-<div class="value">${a.Calibration_Due_On || "-"}</div>
+
+<div class="label">
+CAL Due On
+</div>
+
+<div class="colon">
+:
+</div>
+
+<div class="value">
+${a.Calibration_Due_On || "-"}
+</div>
+
 </div>
 
 
+
 </div>
+
 
 
 `;
@@ -1759,14 +1632,17 @@ Calibration Details
 
 
 
-/* INSTALLATION */
+
+/* INSTALLATION PDF */
 
 
-if(localStorage.getItem("Install")==="Yes"){
+if(
+localStorage.getItem("Install")
+==="Yes"
+){
 
 
-html += `
-
+html +=`
 
 <button onclick="openPDF('${a.Installation_PDF || ""}')">
 
@@ -1774,7 +1650,6 @@ Installation Report
 
 </button>
 
-
 `;
 
 }
@@ -1782,14 +1657,17 @@ Installation Report
 
 
 
-/* PMS */
+
+/* PMS PDF */
 
 
-if(localStorage.getItem("PMS")==="Yes"){
+if(
+localStorage.getItem("PMS")
+==="Yes"
+){
 
 
-html += `
-
+html +=`
 
 <button onclick="openPDF('${a.PMS_PDF || ""}')">
 
@@ -1797,7 +1675,6 @@ PMS Report
 
 </button>
 
-
 `;
 
 }
@@ -1805,14 +1682,18 @@ PMS Report
 
 
 
-/* CALIBRATION */
 
 
-if(localStorage.getItem("Cal")==="Yes"){
+/* CALIBRATION PDF */
 
 
-html += `
+if(
+localStorage.getItem("Cal")
+==="Yes"
+){
 
+
+html +=`
 
 <button onclick="openPDF('${a.Calibration_PDF || ""}')">
 
@@ -1820,10 +1701,11 @@ Calibration Report
 
 </button>
 
-
 `;
 
 }
+
+
 
 
 
@@ -1843,15 +1725,20 @@ localStorage.getItem("PQ")==="Yes"
 ){
 
 
-html += `<div class="btn-row">`;
+
+html+=`
+
+<div class="btn-row">
+
+`;
+
 
 
 
 if(localStorage.getItem("IQ")==="Yes"){
 
 
-html += `
-
+html+=`
 
 <button class="small-btn"
 
@@ -1861,18 +1748,18 @@ IQ
 
 </button>
 
-
 `;
 
 }
 
 
 
+
+
 if(localStorage.getItem("OQ")==="Yes"){
 
 
-html += `
-
+html+=`
 
 <button class="small-btn"
 
@@ -1882,18 +1769,18 @@ OQ
 
 </button>
 
-
 `;
 
 }
 
 
 
+
+
 if(localStorage.getItem("PQ")==="Yes"){
 
 
-html += `
-
+html+=`
 
 <button class="small-btn"
 
@@ -1903,16 +1790,22 @@ PQ
 
 </button>
 
-
 `;
 
 }
 
 
-html += `</div>`;
+
+html+=`
+
+</div>
+
+`;
+
 
 
 }
+
 
 
 
@@ -1921,18 +1814,19 @@ html += `</div>`;
 /* APPROVAL */
 
 
-if(localStorage.getItem("Approve")==="Yes"){
+if(
+localStorage.getItem("Approve")
+==="Yes"
+){
 
 
-html += `
-
+html+=`
 
 <button class="approve">
 
 APPROVED
 
 </button>
-
 
 `;
 
@@ -1941,11 +1835,13 @@ APPROVED
 
 
 
-document.getElementById("assetCard").innerHTML = html;
+
+document.getElementById("assetCard").innerHTML=html;
 
 
 
 }
+
 
 
 
@@ -1960,11 +1856,12 @@ OPEN PDF
 function openPDF(url){
 
 
-
 if(!url || url.trim()===""){
 
 
-alert("PDF not available");
+alert(
+"PDF not available"
+);
 
 
 return;
@@ -1974,8 +1871,10 @@ return;
 
 
 
-window.open(url,"_blank");
-
+window.open(
+url,
+"_blank"
+);
 
 
 }
@@ -1986,9 +1885,8 @@ window.open(url,"_blank");
 
 
 
-
 /* =====================================
-QR SCANNER
+START QR SCANNER
 ===================================== */
 
 
@@ -1996,14 +1894,19 @@ function startScanner(){
 
 
 
-let reader=document.getElementById("reader");
+let reader =
+document.getElementById("reader");
+
 
 
 reader.innerHTML="";
 
 
 
-qr=new Html5Qrcode("reader");
+qr =
+new Html5Qrcode("reader");
+
+
 
 
 
@@ -2018,7 +1921,9 @@ Html5Qrcode.getCameras()
 if(!cameras || cameras.length===0){
 
 
-alert("No camera found");
+alert(
+"No camera found"
+);
 
 
 return;
@@ -2030,33 +1935,23 @@ return;
 
 
 
-let camera = cameras.find(c=>
+let camera =
+cameras.find(c=>
 
-c.label.toLowerCase().includes("back")
+c.label.toLowerCase()
+.includes("back")
 
 );
 
 
 
-let cameraId;
+let cameraId =
+camera ?
 
+camera.id :
 
+cameras[0].id;
 
-if(camera){
-
-
-cameraId=camera.id;
-
-
-}
-
-else{
-
-
-cameraId=cameras[0].id;
-
-
-}
 
 
 
@@ -2083,51 +1978,44 @@ qrbox:250
 (decodedText)=>{
 
 
-
 qr.stop()
+
+
 
 .then(()=>{
 
 
 
-fetch(ASSET_URL)
-
-
-
-.then(response=>response.json())
-
-
-
-.then(data=>{
-
-
-
-let asset=data.find(x=>
+let asset =
+equipmentData.find(x=>
 
 
 String(x.Asset_No)
-
 .trim()
 
 ===
 
 String(decodedText)
-
 .trim()
-
 
 
 );
 
 
 
+
+
 if(!asset){
 
 
-alert("Asset not found");
+alert(
+"Asset not found"
+);
+
 
 
 startScanner();
+
 
 
 return;
@@ -2151,22 +2039,6 @@ showAsset(asset);
 console.error(error);
 
 
-alert("Unable to load asset data");
-
-
-});
-
-
-
-
-})
-
-.catch(error=>{
-
-
-console.error(error);
-
-
 });
 
 
@@ -2175,10 +2047,11 @@ console.error(error);
 
 
 
+
 (errorMessage)=>{
 
 
-// ignore scan errors
+// Ignore scanning errors
 
 
 }
@@ -2196,12 +2069,11 @@ console.error(error);
 
 
 alert(
-"Camera start error : "+error
+"Camera start error"
 );
 
 
 });
-
 
 
 
@@ -2216,7 +2088,7 @@ console.error(error);
 
 
 alert(
-"Camera access error : "+error
+"Camera access error"
 );
 
 
@@ -2226,12 +2098,151 @@ alert(
 
 }
 
+  /* =====================================
+AUTO LOGOUT TIMER
+===================================== */
+
+
+setInterval(()=>{
+
+
+if(
+localStorage.getItem("login")
+!=="yes"
+){
+
+return;
+
+}
+
+
+
+let loginTime =
+Number(localStorage.getItem("loginTime"));
+
+
+
+let autoMinutes =
+Number(localStorage.getItem("Auto_Logoff_Minutes"));
+
+
+
+if(!loginTime || !autoMinutes){
+
+return;
+
+}
+
+
+
+let usedMinutes =
+
+(Date.now()-loginTime)
+
+/
+
+60000;
+
+
+
+
+if(usedMinutes > autoMinutes){
+
+
+alert(
+"Session expired. Please login again."
+);
+
+
+
+logout();
+
+
+
+}
+
+
+
+},30000);
+
+
+
+
+
+/* =====================================
+PAGE VISIBILITY CHECK
+===================================== */
+
+
+document.addEventListener(
+"visibilitychange",
+function(){
+
+
+
+if(document.hidden){
+
+return;
+
+}
+
+
+
+if(
+localStorage.getItem("login")
+==="yes"
+){
+
+
+let loginTime =
+Number(localStorage.getItem("loginTime"));
+
+
+
+let autoMinutes =
+Number(localStorage.getItem("Auto_Logoff_Minutes"));
+
+
+
+if(loginTime && autoMinutes){
+
+
+let used =
+
+(Date.now()-loginTime)
+
+/
+
+60000;
+
+
+
+if(used > autoMinutes){
+
+
+logout();
+
+
+}
+
+
+}
+
+
+
+}
+
+
+
+}
+
+);
+
 
 
 
 
 </script>
-
 
 </body>
 
