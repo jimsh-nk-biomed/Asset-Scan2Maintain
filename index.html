@@ -889,11 +889,7 @@ CHECK EXPIRY
 
 
 showExpiryPopupIfNeeded(
-
-data.expiry,
-
-data.daysLeft
-
+data.days
 );
 
 
@@ -927,61 +923,59 @@ showExpiredPage(
 EXPIRY CHECK
 ===================================== */
 
+function showExpiryPopupIfNeeded(days){
 
-function showExpiryPopupIfNeeded(
 
-expiryDate,
-
-daysLeft
-
-){
+days = Number(days);
 
 
 
-daysLeft =
-Number(daysLeft);
+if(isNaN(days)){
 
-
-
-
-
-if(isNaN(daysLeft)){
-
-
-daysLeft=0;
-
-
-}
-
-
-
-
-if(daysLeft < 0){
-
-
-showExpiredPage(
-"Subscription Expired"
-);
-
+alert("License verification error");
 
 return;
 
+}
+
+
+
+if(days<=0){
+
+
+localStorage.clear();
+
+
+document.body.innerHTML=`
+
+<div class="expired-box">
+
+<h1>
+
+Subscription Expired
+
+<br><br>
+
+Please contact Administrator
+
+</h1>
+
+</div>
+
+`;
+
+return;
 
 }
 
 
 
-
-
-if(daysLeft <=15){
-
+if(days<=15){
 
 
 let popup=document.createElement("div");
 
-
 popup.className="popup-overlay";
-
 
 
 popup.innerHTML=`
@@ -992,41 +986,29 @@ popup.innerHTML=`
 License Notice
 </h2>
 
-
 <p>
 
-License expiry date:
+Subscription valid for
 
 <br><br>
 
-<b>${expiryDate}</b>
-
-<br><br>
-
-${daysLeft} days remaining
+<b>${days} Days</b>
 
 </p>
-
 
 </div>
 
 `;
 
 
-
 document.body.appendChild(popup);
-
 
 
 setTimeout(()=>{
 
-
 popup.remove();
 
-
-openApplication();
-
-
+showScanner();
 
 },3000);
 
@@ -1037,7 +1019,7 @@ openApplication();
 else{
 
 
-openApplication();
+showScanner();
 
 
 }
@@ -1045,6 +1027,7 @@ openApplication();
 
 
 }
+
 
 
 
