@@ -752,11 +752,8 @@ CHECK LICENSE
 
 
 checkCentralLicense(
-
 user.Hospital_ID,
-
 user.License_Key
-
 );
 
 
@@ -925,11 +922,10 @@ data.expiry || ""
 /* OPEN EXPIRY CHECK */
 
 
-showExpiryPopupIfNeeded(data.expiry, data.days);
-
-
-
-})
+showExpiryPopupIfNeeded(
+data.expiry,
+data.daysLeft
+);
 
 
 
@@ -981,19 +977,28 @@ LICENSE EXPIRY CHECK
 function showExpiryPopupIfNeeded(expiryDate,daysLeft){
 
 
-if(daysLeft!==undefined){
+daysLeft = Number(daysLeft);
+
+
 
 if(daysLeft < 0){
+
 
 document.body.innerHTML=`
 
 <div class="expired-box">
 <div>
+
 <h1>
+
 Your subscription has expired.
+
 <br><br>
+
 Please contact Administrator
+
 </h1>
+
 </div>
 </div>
 
@@ -1003,11 +1008,76 @@ return;
 
 }
 
+
+
+
+if(daysLeft <=15){
+
+
+
+let popup=document.createElement("div");
+
+
+popup.className="popup-overlay";
+
+
+
+popup.innerHTML=`
+
+<div class="popup-box">
+
+<h2>
+License Notice
+</h2>
+
+
+<p>
+
+Your license expires on
+
+<br><br>
+
+<b>${expiryDate}</b>
+
+
+<br><br>
+
+Only ${daysLeft} day(s) remaining.
+
+</p>
+
+</div>
+
+`;
+
+
+
+document.body.appendChild(popup);
+
+
+
+setTimeout(()=>{
+
+popup.remove();
+
 showScanner();
-return;
+
+},4000);
+
+
 
 }
 
+else{
+
+
+showScanner();
+
+
+}
+
+
+}
 
 
 let parts = expiryDate.split("-");
