@@ -1529,54 +1529,119 @@ return day+"-"+month+"-"+year;
 
 
 
+
 /************************************************
- STATUS DISPLAY
+ STATUS DISPLAY FUNCTION
 ************************************************/
 
 
-function statusColor(status){
+function statusDisplay(status){
 
 
-if(!status){
 
-return "";
+if(!status || status==""){
+
+
+return {
+
+text:"-",
+
+color:"black"
+
+};
+
 
 }
 
 
 
-let s =
-
-String(status)
-
-.toUpperCase();
 
 
+let s = String(status)
+
+.toUpperCase()
+
+.trim();
 
 
 
-if(
-s.includes("OVERDUE")
-){
 
-return "red";
+
+
+
+if(s.includes("OVERDUE")){
+
+
+return {
+
+
+text:"🔴 OVERDUE",
+
+color:"red"
+
+
+};
+
 
 }
 
 
 
-if(
-s.includes("DUE")
-){
 
-return "orange";
+
+
+
+if(s.includes("DUE SOON")){
+
+
+return {
+
+
+text:"🟠 DUE SOON",
+
+color:"orange"
+
+
+};
+
 
 }
 
 
 
-return "green";
 
+
+
+
+if(s.includes("ACTIVE")){
+
+
+return {
+
+
+text:"🟢 ACTIVE",
+
+color:"green"
+
+
+};
+
+
+}
+
+
+
+
+
+return {
+
+
+text:status,
+
+color:"black"
+
+
+};
 
 
 }
@@ -1598,7 +1663,16 @@ function showAsset(a){
 
 
 
+let pmsStatus = statusDisplay(a.PMS_Status);
+
+let calStatus = statusDisplay(a.CAL_Status);
+
+
+
+
+
 let html = `
+
 
 
 
@@ -1610,6 +1684,7 @@ let html = `
 Equipment Details
 
 </div>
+
 
 
 
@@ -1632,11 +1707,13 @@ Equipment Details
 
 
 
+
 <div class="row">
 <div class="label">Equipment</div>
 <div>:</div>
 <div>${a.Equipment || "-"}</div>
 </div>
+
 
 
 
@@ -1650,11 +1727,13 @@ Equipment Details
 
 
 
+
 <div class="row">
 <div class="label">Make</div>
 <div>:</div>
 <div>${a.Make || "-"}</div>
 </div>
+
 
 
 
@@ -1676,6 +1755,8 @@ Equipment Details
 
 
 
+
+
 <div class="box">
 
 
@@ -1684,6 +1765,7 @@ Equipment Details
 PMS Details
 
 </div>
+
 
 
 
@@ -1697,11 +1779,13 @@ PMS Details
 
 
 
+
 <div class="row">
 <div class="label">PMS Due</div>
 <div>:</div>
 <div>${formatDate(a.PMS_Due_On)}</div>
 </div>
+
 
 
 
@@ -1712,10 +1796,10 @@ PMS Details
 
 <div style="
 font-weight:bold;
-color:${statusColor(a.PMS_Status)}
+color:${pmsStatus.color}
 ">
 
-${a.PMS_Status || "-"}
+${pmsStatus.text}
 
 </div>
 
@@ -1724,6 +1808,7 @@ ${a.PMS_Status || "-"}
 
 
 </div>
+
 
 
 
@@ -1754,6 +1839,7 @@ Calibration Details
 
 
 
+
 <div class="row">
 <div class="label">Calibration Due</div>
 <div>:</div>
@@ -1773,16 +1859,15 @@ Calibration Details
 
 <div style="
 font-weight:bold;
-color:${statusColor(a.CAL_Status)}
+color:${calStatus.color}
 ">
 
-${a.CAL_Status || "-"}
+${calStatus.text}
 
 </div>
 
 
 </div>
-
 
 
 
@@ -1801,18 +1886,23 @@ ${a.CAL_Status || "-"}
 
 
 /************************************************
- DOCUMENT BUTTONS
+ DOCUMENT ACCESS CONTROL
 ************************************************/
 
 
 if(
+
 localStorage.getItem("Installation")=="Yes"
+
 &&
+
 a.Installation_PDF
+
 ){
 
 
 html += `
+
 
 <button onclick="openPDF('${a.Installation_PDF}')">
 
@@ -1820,6 +1910,7 @@ Installation Document
 
 </button>
 
+
 `;
 
 }
@@ -1827,14 +1918,22 @@ Installation Document
 
 
 
+
+
+
 if(
+
 localStorage.getItem("PMS")=="Yes"
+
 &&
+
 a.PMS_PDF
+
 ){
 
 
 html += `
+
 
 <button onclick="openPDF('${a.PMS_PDF}')">
 
@@ -1842,6 +1941,7 @@ PMS Document
 
 </button>
 
+
 `;
 
 }
@@ -1850,14 +1950,21 @@ PMS Document
 
 
 
+
+
 if(
+
 localStorage.getItem("Calibration")=="Yes"
+
 &&
+
 a.Calibration_PDF
+
 ){
 
 
 html += `
+
 
 <button onclick="openPDF('${a.Calibration_PDF}')">
 
@@ -1865,6 +1972,7 @@ Calibration Document
 
 </button>
 
+
 `;
 
 }
@@ -1872,21 +1980,31 @@ Calibration Document
 
 
 
+
+
+
+
 if(
+
 localStorage.getItem("IQ")=="Yes"
+
 &&
+
 a.IQ_PDF
+
 ){
 
 
 html += `
 
-<button onclick="openPDF('${a.IQ_PDF}')">
+
+button onclick="openPDF('${a.IQ_PDF}')">
 
 IQ Document
 
 </button>
 
+
 `;
 
 }
@@ -1894,14 +2012,23 @@ IQ Document
 
 
 
+
+
+
+
 if(
+
 localStorage.getItem("OQ")=="Yes"
+
 &&
+
 a.OQ_PDF
+
 ){
 
 
 html += `
+
 
 <button onclick="openPDF('${a.OQ_PDF}')">
 
@@ -1909,6 +2036,7 @@ OQ Document
 
 </button>
 
+
 `;
 
 }
@@ -1916,14 +2044,23 @@ OQ Document
 
 
 
+
+
+
+
 if(
+
 localStorage.getItem("PQ")=="Yes"
+
 &&
+
 a.PQ_PDF
+
 ){
 
 
 html += `
+
 
 <button onclick="openPDF('${a.PQ_PDF}')">
 
@@ -1931,9 +2068,12 @@ PQ Document
 
 </button>
 
+
 `;
 
 }
+
+
 
 
 
@@ -1965,19 +2105,23 @@ function openPDF(url){
 
 if(!url){
 
-alert(
-"Document not available"
-);
+
+alert("Document not available");
+
 
 return;
+
 
 }
 
 
 
 window.open(
+
 url,
+
 "_blank"
+
 );
 
 
@@ -2018,7 +2162,6 @@ qrScanner.stop()
 location.reload();
 
 
-
 }
 
 
@@ -2038,12 +2181,17 @@ setInterval(function(){
 
 
 if(
+
 localStorage.getItem("login")!="YES"
+
 ){
+
 
 return;
 
+
 }
+
 
 
 
@@ -2051,8 +2199,11 @@ return;
 let loginTime =
 
 Number(
+
 localStorage.getItem("loginTime")
+
 );
+
 
 
 
@@ -2060,8 +2211,12 @@ localStorage.getItem("loginTime")
 let limit =
 
 Number(
+
 localStorage.getItem("Auto_Logoff_Minutes")
+
 );
+
+
 
 
 
@@ -2070,6 +2225,7 @@ if(!limit){
 limit=60;
 
 }
+
 
 
 
@@ -2085,11 +2241,19 @@ let used =
 
 
 
-if(used > limit){
+
+if(
+
+used > limit
+
+){
+
 
 
 alert(
-"Session expired"
+
+"Session expired. Please login again."
+
 );
 
 
@@ -2112,5 +2276,6 @@ logout();
 
 
 </body>
+
 
 </html>
