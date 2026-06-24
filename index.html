@@ -794,14 +794,16 @@ encodeURIComponent(licenseKey);
 
 
 
-fetch(url)
+document.getElementById("msg").innerHTML =
+"Checking login...";
 
 
-
+fetch(url,
+{
+method:"GET",
+cache:"no-store"
+})
 .then(response=>response.json())
-
-
-
 .then(data=>{
 
 
@@ -1149,9 +1151,36 @@ return;
 
 
 
-let cameraId=
+let cameraId = null;
 
-cameras[0].id;
+
+// Prefer back camera
+
+for(let i=0;i<cameras.length;i++){
+
+    let label = cameras[i].label.toLowerCase();
+
+    if(
+        label.includes("back") ||
+        label.includes("rear") ||
+        label.includes("environment")
+    ){
+
+        cameraId = cameras[i].id;
+        break;
+
+    }
+
+}
+
+
+// If back camera not found use first camera
+
+if(!cameraId){
+
+    cameraId = cameras[0].id;
+
+}
 
 
 
