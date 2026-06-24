@@ -1873,6 +1873,10 @@ qrbox:250
 
 (decodedText)=>{
 
+  console.log(
+"QR RAW VALUE:",
+decodedText
+);
 
 qr.stop()
 
@@ -1882,20 +1886,36 @@ qr.stop()
 
 
 
-let asset =
-equipmentData.find(x=>
-
-
-String(x.Asset_No)
-.trim()
-
-===
-
+let scannedQR =
 String(decodedText)
 .trim()
+.toUpperCase();
 
 
+
+console.log(
+"SCANNED QR:",
+scannedQR
 );
+
+
+
+let asset =
+equipmentData.find(x=>{
+
+
+let assetNo =
+String(x.Asset_No)
+.trim()
+.toUpperCase();
+
+
+
+return assetNo === scannedQR;
+
+
+});
+
 
 
 
