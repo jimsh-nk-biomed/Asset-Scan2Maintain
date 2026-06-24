@@ -1,11 +1,15 @@
 <!DOCTYPE html>
+
 <html>
 
 <head>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Asset Scan2Maintain</title>
+
+<title>
+Asset Scan2Maintain
+</title>
 
 
 <script src="https://unpkg.com/html5-qrcode"></script>
@@ -54,14 +58,14 @@ text-align:center;
 }
 
 
-
 .logo img{
 
-width:160px;
+width:180px;
 
 max-width:90%;
 
 }
+
 
 
 
@@ -118,6 +122,8 @@ background:#0066cc;
 color:white;
 
 font-size:16px;
+
+cursor:pointer;
 
 }
 
@@ -209,15 +215,15 @@ margin-bottom:10px;
 
 
 
-.small{
-
-font-size:13px;
+.message{
 
 text-align:center;
 
 color:red;
 
 margin-top:10px;
+
+font-size:14px;
 
 }
 
@@ -230,6 +236,7 @@ margin-top:10px;
 
 
 
+
 <body>
 
 
@@ -238,6 +245,7 @@ margin-top:10px;
 
 
 <div id="loginPage" class="card">
+
 
 
 <div class="logo">
@@ -260,7 +268,10 @@ Asset Scan2Maintain
 
 id="username"
 
-placeholder="Username">
+placeholder="Username"
+
+>
+
 
 
 <input
@@ -269,7 +280,9 @@ id="password"
 
 type="password"
 
-placeholder="Password">
+placeholder="Password"
+
+>
 
 
 
@@ -281,7 +294,8 @@ LOGIN
 
 
 
-<div id="msg" class="small"></div>
+<div id="msg" class="message"></div>
+
 
 
 </div>
@@ -291,13 +305,19 @@ LOGIN
 
 
 
+
+
+
 <!-- ================= SCANNER PAGE ================= -->
+
 
 
 <div id="scannerPage">
 
 
+
 <div class="card">
+
 
 
 <div class="logo">
@@ -351,13 +371,14 @@ LOGOUT
 
 
 
+
 <script>
 
 
 
-/*************************************************
+/************************************************
  CONFIGURATION
-*************************************************/
+************************************************/
 
 
 const LICENSE_API =
@@ -371,15 +392,7 @@ const LICENSE_API =
 let equipmentData=[];
 
 
-let userData=[];
-
-
-let qrScanner=null;
-
-
-
 let currentUser={};
-
 
 
 let hospitalID="";
@@ -388,16 +401,23 @@ let hospitalID="";
 let licenseKey="";
 
 
+let qrScanner=null;
+
+
+let autoLogoutMinutes=60;
+
+
 let licenseDays=0;
 
 
 
-/*************************************************
+/************************************************
  LOGIN FUNCTION
-*************************************************/
+************************************************/
 
 
 function login(){
+
 
 
 let username =
@@ -417,15 +437,13 @@ document.getElementById("password")
 
 
 
-if(
-username=="" ||
-password==""
-){
+
+if(username=="" || password==""){
 
 
-document.getElementById("msg").innerHTML =
+document.getElementById("msg").innerHTML=
 
-"Enter username and password";
+"Enter Username and Password";
 
 
 return;
@@ -436,18 +454,37 @@ return;
 
 
 
-/*
-LOAD USERS THROUGH LICENSE SERVER
-*/
 
 
-fetch(
+let url =
 
-LICENSE_API+
+LICENSE_API
 
-"?action=users"
++
 
-)
+"?action=login"
+
++
+
+"&username="
+
++
+
+encodeURIComponent(username)
+
++
+
+"&password="
+
++
+
+encodeURIComponent(password);
+
+
+
+
+
+fetch(url)
 
 
 
@@ -455,73 +492,28 @@ LICENSE_API+
 
 
 
-.then(users=>{
+.then(data=>{
 
 
 
 console.log(
-"USERS DATA:",
-users
+"LOGIN RESPONSE:",
+data
 );
+
+
 
 
 
 if(
-users.status
-&&
-users.status!="VALID"
+
+String(data.status).toUpperCase()
+
+!=
+
+"VALID"
+
 ){
-
-
-document.getElementById("msg").innerHTML=
-
-"Unable to load users";
-
-
-return;
-
-
-}
-
-
-
-
-userData=users;
-
-
-
-
-let user = users.find(u=>
-
-
-String(u.Username || "")
-.trim()
-.toLowerCase()
-
-===
-
-username.toLowerCase()
-
-
-&&
-
-
-String(u.Password || "")
-.trim()
-
-===
-
-password
-
-
-
-);
-
-
-
-
-
-if(!user){
 
 
 document.getElementById("msg").innerHTML=
@@ -538,46 +530,61 @@ return;
 
 
 
+
+
 /*
-SAVE USER DETAILS
+SAVE USER DATA
 */
 
 
-currentUser=user;
+
+currentUser=data.User;
 
 
 
-hospitalID =
-
-user.Hospital_ID;
+hospitalID=data.Hospital_ID;
 
 
 
-licenseKey =
+licenseKey=data.License_Key;
 
-user.License_Key;
+
 
 
 
 
 localStorage.setItem(
+
 "login",
+
 "YES"
+
 );
 
 
 
+
+
 localStorage.setItem(
+
 "Hospital_ID",
+
 hospitalID
+
 );
+
+
 
 
 
 localStorage.setItem(
+
 "License_Key",
+
 licenseKey
+
 );
+
 
 
 
@@ -588,52 +595,99 @@ SAVE PERMISSIONS
 */
 
 
+
 localStorage.setItem(
+
 "Installation",
-user.Installation || "No"
+
+data.User.Installation || "No"
+
 );
 
 
 
+
+
 localStorage.setItem(
+
 "IQ",
-user.IQ || "No"
+
+data.User.IQ || "No"
+
 );
 
 
 
+
+
 localStorage.setItem(
+
 "OQ",
-user.OQ || "No"
+
+data.User.OQ || "No"
+
 );
 
 
 
+
+
 localStorage.setItem(
+
 "PQ",
-user.PQ || "No"
+
+data.User.PQ || "No"
+
 );
 
 
 
+
+
 localStorage.setItem(
+
 "PMS",
-user.PMS || "No"
+
+data.User.PMS || "No"
+
 );
 
 
 
+
+
 localStorage.setItem(
+
 "Calibration",
-user.Calibration || "No"
+
+data.User.Calibration || "No"
+
 );
+
+
 
 
 
 localStorage.setItem(
+
 "Approve",
-user.Approve || "No"
+
+data.User.Approve || "No"
+
 );
+
+
+
+
+
+autoLogoutMinutes=
+
+Number(
+
+data.User.Auto_Logoff_Minutes || 60
+
+);
+
 
 
 
@@ -642,7 +696,7 @@ localStorage.setItem(
 
 "Auto_Logoff_Minutes",
 
-user.Auto_Logoff_Minutes || 60
+autoLogoutMinutes
 
 );
 
@@ -657,6 +711,8 @@ localStorage.setItem(
 Date.now()
 
 );
+
+
 
 
 
@@ -700,7 +756,7 @@ document.getElementById("msg").innerHTML=
 
 
 
-/*************************************************
+/************************************************
  LICENSE CHECK
 *************************************************/
 
@@ -711,19 +767,28 @@ function checkLicense(){
 
 let url =
 
-LICENSE_API +
+LICENSE_API
 
-"?action=license" +
++
 
-"&hospitalID=" +
+"?action=license"
+
++
+
+"&hospitalID="
+
++
 
 encodeURIComponent(hospitalID)
 
 +
 
-"&key=" +
+"&key="
+
++
 
 encodeURIComponent(licenseKey);
+
 
 
 
@@ -742,9 +807,13 @@ fetch(url)
 
 
 console.log(
-"LICENSE:",
+
+"LICENSE RESPONSE:",
+
 data
+
 );
+
 
 
 
@@ -752,14 +821,12 @@ data
 
 if(
 
-String(data.status)
-.toUpperCase()
+String(data.status).toUpperCase()
 
-!=
-
-"VALID"
+!="VALID"
 
 ){
+
 
 
 document.body.innerHTML=
@@ -767,13 +834,21 @@ document.body.innerHTML=
 `
 
 <div style="
+
 height:100vh;
+
 display:flex;
+
 align-items:center;
+
 justify-content:center;
+
 text-align:center;
+
 font-family:Arial;
+
 ">
+
 
 <h2 style="color:red">
 
@@ -781,9 +856,10 @@ LICENSE EXPIRED
 
 <br><br>
 
-Contact Administrator
+Please contact Administrator
 
 </h2>
+
 
 </div>
 
@@ -803,6 +879,7 @@ licenseDays=data.days;
 
 
 
+
 loadEquipment();
 
 
@@ -819,8 +896,11 @@ console.log(error);
 
 
 alert(
+
 "License verification failed"
+
 );
+
 
 
 });
@@ -829,16 +909,9 @@ alert(
 
 }
 
-
-
-
-
-
-
-
-/*************************************************
- LOAD EQUIPMENT SECURELY
-*************************************************/
+ /************************************************
+ LOAD EQUIPMENT DATA
+************************************************/
 
 
 function loadEquipment(){
@@ -847,19 +920,28 @@ function loadEquipment(){
 
 let url =
 
-LICENSE_API +
+LICENSE_API
 
-"?action=equipment" +
++
 
-"&hospitalID=" +
+"?action=equipment"
+
++
+
+"&hospitalID="
+
++
 
 encodeURIComponent(hospitalID)
 
 +
 
-"&key=" +
+"&key="
+
++
 
 encodeURIComponent(licenseKey);
+
 
 
 
@@ -878,23 +960,32 @@ fetch(url)
 
 
 console.log(
-"EQUIPMENT:",
+
+"EQUIPMENT RESPONSE:",
+
 data
+
 );
 
 
 
 
+
 if(
+
 data.status
+
 &&
+
 data.status!="VALID"
 
 ){
 
 
 alert(
-"Equipment loading failed"
+
+"Unable to load equipment data"
+
 );
 
 
@@ -906,7 +997,10 @@ return;
 
 
 
+
+
 equipmentData=data;
+
 
 
 
@@ -917,6 +1011,8 @@ console.log(
 equipmentData.length
 
 );
+
+
 
 
 
@@ -936,8 +1032,11 @@ console.log(error);
 
 
 alert(
-"Unable to load equipment"
+
+"Equipment loading failed"
+
 );
+
 
 
 });
@@ -945,21 +1044,37 @@ alert(
 
 
 }
-/*************************************************
- OPEN QR SCANNER
-*************************************************/
+
+
+
+
+
+
+
+
+
+/************************************************
+ OPEN SCANNER PAGE
+************************************************/
 
 
 function openScanner(){
 
 
+
 document.getElementById("loginPage")
+
 .style.display="none";
 
 
 
+
+
 document.getElementById("scannerPage")
+
 .style.display="block";
+
+
 
 
 
@@ -974,9 +1089,12 @@ startQRScanner();
 
 
 
-/*************************************************
+
+
+
+/************************************************
  START QR SCANNER
-*************************************************/
+************************************************/
 
 
 function startQRScanner(){
@@ -984,11 +1102,14 @@ function startQRScanner(){
 
 
 document.getElementById("reader")
+
 .innerHTML="";
 
 
 
+
 qrScanner =
+
 new Html5Qrcode("reader");
 
 
@@ -998,18 +1119,24 @@ new Html5Qrcode("reader");
 Html5Qrcode.getCameras()
 
 
+
 .then(cameras=>{
 
 
 
 if(
+
 !cameras ||
+
 cameras.length==0
+
 ){
 
 
 alert(
-"No camera detected"
+
+"No camera available"
+
 );
 
 
@@ -1021,8 +1148,12 @@ return;
 
 
 
-let cameraId =
+
+let cameraId=
+
 cameras[0].id;
+
+
 
 
 
@@ -1031,16 +1162,22 @@ cameras[0].id;
 qrScanner.start(
 
 
+
 cameraId,
 
 
+
 {
+
 
 fps:10,
 
 qrbox:250
 
+
 },
+
+
 
 
 
@@ -1049,9 +1186,13 @@ qrbox:250
 
 
 console.log(
-"SCANNED QR:",
+
+"QR SCANNED:",
+
 decodedText
+
 );
+
 
 
 
@@ -1063,12 +1204,15 @@ qrScanner.stop()
 
 
 
+
+
 /*
 CLEAN QR VALUE
 */
 
 
-let scannedValue =
+
+let scannedAsset =
 
 String(decodedText)
 
@@ -1076,33 +1220,49 @@ String(decodedText)
 
 .toUpperCase()
 
-.replace(/\s/g,'');
+.replace(/\s/g,'')
+
+.replace(/[\r\n]/g,'');
+
 
 
 
 
 
 console.log(
+
 "CLEAN QR:",
-scannedValue
+
+scannedAsset
+
 );
 
 
 
 
 
+
+
+
 /*
-FIND ASSET
+SEARCH ASSET
 */
 
 
+
 let asset =
+
+
 
 equipmentData.find(item=>{
 
 
 
+
+
 let sheetAsset =
+
+
 
 String(item.Asset_No || "")
 
@@ -1110,17 +1270,21 @@ String(item.Asset_No || "")
 
 .toUpperCase()
 
-.replace(/\s/g,'');
+.replace(/\s/g,'')
+
+.replace(/[\r\n]/g,'');
 
 
 
 
 
-return sheetAsset === scannedValue;
+
+return sheetAsset === scannedAsset;
 
 
 
 });
+
 
 
 
@@ -1134,6 +1298,7 @@ if(!asset){
 
 alert(
 
+
 "ASSET NOT FOUND\n\n"
 
 +
@@ -1142,13 +1307,16 @@ alert(
 
 +
 
-scannedValue
+scannedAsset
+
+
 
 );
 
 
 
 startQRScanner();
+
 
 
 return;
@@ -1164,8 +1332,10 @@ showAsset(asset);
 
 
 
-});
 
+
+
+});
 
 
 
@@ -1173,10 +1343,13 @@ showAsset(asset);
 
 
 
+
+
 (error)=>{
 
 
-// ignore scanning errors
+// QR scanning errors ignored
+
 
 
 }
@@ -1186,33 +1359,47 @@ showAsset(asset);
 )
 
 
+
 .catch(error=>{
+
 
 
 console.log(error);
 
 
+
 alert(
-"Camera start failed"
+
+"Camera start error"
+
 );
+
 
 
 });
 
 
 
+
+
 })
+
 
 
 .catch(error=>{
 
 
+
 console.log(error);
 
 
+
 alert(
-"Camera permission error"
+
+"Camera permission denied"
+
 );
+
 
 
 });
@@ -1228,9 +1415,10 @@ alert(
 
 
 
-/*************************************************
+
+/************************************************
  SCAN AGAIN
-*************************************************/
+************************************************/
 
 
 function scanAgain(){
@@ -1238,6 +1426,7 @@ function scanAgain(){
 
 
 document.getElementById("assetCard")
+
 .innerHTML="";
 
 
@@ -1247,9 +1436,9 @@ startQRScanner();
 
 
 }
-/*************************************************
+/************************************************
  DISPLAY ASSET DETAILS
-*************************************************/
+************************************************/
 
 
 function showAsset(a){
@@ -1272,59 +1461,93 @@ Equipment Details
 
 
 
+
 <div class="row">
+
 <div class="label">Asset No</div>
+
 <div>:</div>
+
 <div>${a.Asset_No || "-"}</div>
+
 </div>
 
 
 
+
+
 <div class="row">
+
 <div class="label">Department</div>
+
 <div>:</div>
+
 <div>${a.Department || "-"}</div>
+
 </div>
 
 
 
 
+
 <div class="row">
+
 <div class="label">Equipment</div>
+
 <div>:</div>
+
 <div>${a.Equipment || "-"}</div>
+
 </div>
 
 
 
 
+
 <div class="row">
+
 <div class="label">Model</div>
+
 <div>:</div>
+
 <div>${a.Model || "-"}</div>
+
 </div>
 
 
 
 
+
 <div class="row">
+
 <div class="label">Make</div>
+
 <div>:</div>
+
 <div>${a.Make || "-"}</div>
+
 </div>
+
 
 
 
 
 <div class="row">
+
 <div class="label">Serial No</div>
+
 <div>:</div>
+
 <div>${a.Serial_No || "-"}</div>
+
+</div>
+
+
+
 </div>
 
 
 
-</div>
 
 
 
@@ -1341,31 +1564,51 @@ PMS Details
 
 
 
+
+
 <div class="row">
-<div class="label">PMS Done On</div>
+
+<div class="label">PMS Done</div>
+
 <div>:</div>
+
 <div>${a.PMS_Done_On || "-"}</div>
+
 </div>
 
 
 
+
+
 <div class="row">
-<div class="label">PMS Due On</div>
+
+<div class="label">PMS Due</div>
+
 <div>:</div>
+
 <div>${a.PMS_Due_On || "-"}</div>
+
 </div>
+
+
 
 
 
 <div class="row">
+
 <div class="label">Status</div>
+
 <div>:</div>
+
 <div>${a.PMS_Status || "-"}</div>
+
+</div>
+
+
+
 </div>
 
 
-
-</div>
 
 
 
@@ -1384,31 +1627,50 @@ Calibration Details
 
 
 
+
+
 <div class="row">
+
 <div class="label">Calibration Done</div>
+
 <div>:</div>
+
 <div>${a.Calibration_Done_On || "-"}</div>
+
 </div>
 
 
 
+
+
 <div class="row">
+
 <div class="label">Calibration Due</div>
+
 <div>:</div>
+
 <div>${a.Calibration_Due_On || "-"}</div>
+
 </div>
+
+
 
 
 
 <div class="row">
+
 <div class="label">Status</div>
+
 <div>:</div>
+
 <div>${a.CAL_Status || "-"}</div>
-</div>
-
-
 
 </div>
+
+
+
+</div>
+
 
 
 `;
@@ -1417,9 +1679,14 @@ Calibration Details
 
 
 
-/*************************************************
- DOCUMENT ACCESS CONTROL
-*************************************************/
+
+
+
+
+/************************************************
+ DOCUMENT PERMISSION CONTROL
+************************************************/
+
 
 
 
@@ -1439,15 +1706,18 @@ a.Installation_PDF
 
 html += `
 
+
 <button onclick="openPDF('${a.Installation_PDF}')">
 
 Installation Document
 
 </button>
 
+
 `;
 
 }
+
 
 
 
@@ -1468,15 +1738,19 @@ a.PMS_PDF
 
 html += `
 
+
 <button onclick="openPDF('${a.PMS_PDF}')">
 
 PMS Document
 
 </button>
 
+
 `;
 
 }
+
+
 
 
 
@@ -1497,15 +1771,19 @@ a.Calibration_PDF
 
 html += `
 
+
 <button onclick="openPDF('${a.Calibration_PDF}')">
 
 Calibration Document
 
 </button>
 
+
 `;
 
 }
+
+
 
 
 
@@ -1527,15 +1805,19 @@ a.IQ_PDF
 
 html += `
 
+
 <button onclick="openPDF('${a.IQ_PDF}')">
 
 IQ Document
 
 </button>
 
+
 `;
 
 }
+
+
 
 
 
@@ -1556,15 +1838,19 @@ a.OQ_PDF
 
 html += `
 
+
 <button onclick="openPDF('${a.OQ_PDF}')">
 
 OQ Document
 
 </button>
 
+
 `;
 
 }
+
+
 
 
 
@@ -1585,46 +1871,25 @@ a.PQ_PDF
 
 html += `
 
+
 <button onclick="openPDF('${a.PQ_PDF}')">
 
 PQ Document
 
 </button>
 
-`;
-
-}
-
-
-
-
-
-if(
-
-localStorage.getItem("Approve")
-
-=="Yes"
-
-){
-
-
-html += `
-
-<button style="background:#28a745">
-
-APPROVED
-
-</button>
 
 `;
 
 }
+
 
 
 
 
 
 document.getElementById("assetCard")
+
 .innerHTML=html;
 
 
@@ -1637,22 +1902,24 @@ document.getElementById("assetCard")
 
 
 
-/*************************************************
+
+
+/************************************************
  OPEN PDF
-*************************************************/
+************************************************/
 
 
 function openPDF(url){
 
 
-if(
-!url ||
-url==""
-){
+
+if(!url){
 
 
 alert(
+
 "Document not available"
+
 );
 
 
@@ -1664,9 +1931,13 @@ return;
 
 
 window.open(
+
 url,
+
 "_blank"
+
 );
+
 
 
 }
@@ -1677,18 +1948,34 @@ url,
 
 
 
-/*************************************************
+
+
+/************************************************
  LOGOUT
-*************************************************/
+************************************************/
 
 
 function logout(){
 
 
+
 localStorage.clear();
 
 
+
+if(qrScanner){
+
+
+qrScanner.stop()
+.catch(()=>{});
+
+
+}
+
+
+
 location.reload();
+
 
 
 }
@@ -1699,9 +1986,11 @@ location.reload();
 
 
 
-/*************************************************
+
+
+/************************************************
  AUTO LOGOUT
-*************************************************/
+************************************************/
 
 
 setInterval(function(){
@@ -1716,9 +2005,14 @@ localStorage.getItem("login")
 
 ){
 
+
 return;
 
+
 }
+
+
+
 
 
 
@@ -1732,6 +2026,9 @@ localStorage.getItem("loginTime")
 
 
 
+
+
+
 let limit =
 
 Number(
@@ -1739,6 +2036,9 @@ Number(
 localStorage.getItem("Auto_Logoff_Minutes")
 
 );
+
+
+
 
 
 
@@ -1750,6 +2050,8 @@ limit=60;
 
 
 
+
+
 let used =
 
 (Date.now()-loginTime)
@@ -1757,6 +2059,8 @@ let used =
 /
 
 60000;
+
+
 
 
 
@@ -1791,9 +2095,12 @@ logout();
 
 
 
+
 </script>
 
 
+
 </body>
+
 
 </html>
