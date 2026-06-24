@@ -1466,6 +1466,130 @@ startQRScanner();
 
 }
 /************************************************
+ DATE FORMAT FUNCTION
+************************************************/
+
+
+function formatDate(value){
+
+
+if(!value || value==""){
+
+return "-";
+
+}
+
+
+
+let d = new Date(value);
+
+
+
+if(isNaN(d)){
+
+
+return value;
+
+
+}
+
+
+
+let day =
+
+String(d.getDate())
+
+.padStart(2,"0");
+
+
+
+let month =
+
+String(d.getMonth()+1)
+
+.padStart(2,"0");
+
+
+
+let year =
+
+d.getFullYear();
+
+
+
+return day+"-"+month+"-"+year;
+
+
+
+}
+
+
+
+
+
+
+
+/************************************************
+ STATUS DISPLAY
+************************************************/
+
+
+function statusColor(status){
+
+
+if(!status){
+
+return "";
+
+}
+
+
+
+let s =
+
+String(status)
+
+.toUpperCase();
+
+
+
+
+
+if(
+s.includes("OVERDUE")
+){
+
+return "red";
+
+}
+
+
+
+if(
+s.includes("DUE")
+){
+
+return "orange";
+
+}
+
+
+
+return "green";
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/************************************************
  DISPLAY ASSET DETAILS
 ************************************************/
 
@@ -1490,85 +1614,55 @@ Equipment Details
 
 
 
-
 <div class="row">
-
 <div class="label">Asset No</div>
-
 <div>:</div>
-
 <div>${a.Asset_No || "-"}</div>
-
 </div>
 
 
 
 
-
 <div class="row">
-
 <div class="label">Department</div>
-
 <div>:</div>
-
 <div>${a.Department || "-"}</div>
-
 </div>
 
 
 
 
-
 <div class="row">
-
 <div class="label">Equipment</div>
-
 <div>:</div>
-
 <div>${a.Equipment || "-"}</div>
-
 </div>
 
 
 
 
-
 <div class="row">
-
 <div class="label">Model</div>
-
 <div>:</div>
-
 <div>${a.Model || "-"}</div>
-
 </div>
 
 
 
 
-
 <div class="row">
-
 <div class="label">Make</div>
-
 <div>:</div>
-
 <div>${a.Make || "-"}</div>
-
 </div>
 
 
 
 
-
 <div class="row">
-
 <div class="label">Serial No</div>
-
 <div>:</div>
-
 <div>${a.Serial_No || "-"}</div>
-
 </div>
 
 
@@ -1594,49 +1688,42 @@ PMS Details
 
 
 
-
 <div class="row">
-
 <div class="label">PMS Done</div>
-
 <div>:</div>
-
-<div>${a.PMS_Done_On || "-"}</div>
-
+<div>${formatDate(a.PMS_Done_On)}</div>
 </div>
 
 
 
 
-
 <div class="row">
-
 <div class="label">PMS Due</div>
-
 <div>:</div>
-
-<div>${a.PMS_Due_On || "-"}</div>
-
+<div>${formatDate(a.PMS_Due_On)}</div>
 </div>
-
 
 
 
 
 <div class="row">
-
 <div class="label">Status</div>
-
 <div>:</div>
 
-<div>${a.PMS_Status || "-"}</div>
+<div style="
+font-weight:bold;
+color:${statusColor(a.PMS_Status)}
+">
+
+${a.PMS_Status || "-"}
+
+</div>
 
 </div>
 
 
 
 </div>
-
 
 
 
@@ -1659,27 +1746,18 @@ Calibration Details
 
 
 <div class="row">
-
 <div class="label">Calibration Done</div>
-
 <div>:</div>
-
-<div>${a.Calibration_Done_On || "-"}</div>
-
+<div>${formatDate(a.Calibration_Done_On)}</div>
 </div>
 
 
 
 
-
 <div class="row">
-
 <div class="label">Calibration Due</div>
-
 <div>:</div>
-
-<div>${a.Calibration_Due_On || "-"}</div>
-
+<div>${formatDate(a.Calibration_Due_On)}</div>
 </div>
 
 
@@ -1692,9 +1770,19 @@ Calibration Details
 
 <div>:</div>
 
-<div>${a.CAL_Status || "-"}</div>
+
+<div style="
+font-weight:bold;
+color:${statusColor(a.CAL_Status)}
+">
+
+${a.CAL_Status || "-"}
 
 </div>
+
+
+</div>
+
 
 
 
@@ -1713,28 +1801,18 @@ Calibration Details
 
 
 /************************************************
- DOCUMENT PERMISSION CONTROL
+ DOCUMENT BUTTONS
 ************************************************/
 
 
-
-
 if(
-
-localStorage.getItem("Installation")
-
-=="Yes"
-
+localStorage.getItem("Installation")=="Yes"
 &&
-
 a.Installation_PDF
-
 ){
 
 
-
 html += `
-
 
 <button onclick="openPDF('${a.Installation_PDF}')">
 
@@ -1742,7 +1820,6 @@ Installation Document
 
 </button>
 
-
 `;
 
 }
@@ -1750,23 +1827,14 @@ Installation Document
 
 
 
-
 if(
-
-localStorage.getItem("PMS")
-
-=="Yes"
-
+localStorage.getItem("PMS")=="Yes"
 &&
-
 a.PMS_PDF
-
 ){
 
 
-
 html += `
-
 
 <button onclick="openPDF('${a.PMS_PDF}')">
 
@@ -1774,7 +1842,6 @@ PMS Document
 
 </button>
 
-
 `;
 
 }
@@ -1783,23 +1850,14 @@ PMS Document
 
 
 
-
 if(
-
-localStorage.getItem("Calibration")
-
-=="Yes"
-
+localStorage.getItem("Calibration")=="Yes"
 &&
-
 a.Calibration_PDF
-
 ){
 
 
-
 html += `
-
 
 <button onclick="openPDF('${a.Calibration_PDF}')">
 
@@ -1807,7 +1865,6 @@ Calibration Document
 
 </button>
 
-
 `;
 
 }
@@ -1815,25 +1872,14 @@ Calibration Document
 
 
 
-
-
-
 if(
-
-localStorage.getItem("IQ")
-
-=="Yes"
-
+localStorage.getItem("IQ")=="Yes"
 &&
-
 a.IQ_PDF
-
 ){
 
 
-
 html += `
-
 
 <button onclick="openPDF('${a.IQ_PDF}')">
 
@@ -1841,7 +1887,6 @@ IQ Document
 
 </button>
 
-
 `;
 
 }
@@ -1849,24 +1894,14 @@ IQ Document
 
 
 
-
-
 if(
-
-localStorage.getItem("OQ")
-
-=="Yes"
-
+localStorage.getItem("OQ")=="Yes"
 &&
-
 a.OQ_PDF
-
 ){
 
 
-
 html += `
-
 
 <button onclick="openPDF('${a.OQ_PDF}')">
 
@@ -1874,7 +1909,6 @@ OQ Document
 
 </button>
 
-
 `;
 
 }
@@ -1882,24 +1916,14 @@ OQ Document
 
 
 
-
-
 if(
-
-localStorage.getItem("PQ")
-
-=="Yes"
-
+localStorage.getItem("PQ")=="Yes"
 &&
-
 a.PQ_PDF
-
 ){
 
 
-
 html += `
-
 
 <button onclick="openPDF('${a.PQ_PDF}')">
 
@@ -1907,11 +1931,9 @@ PQ Document
 
 </button>
 
-
 `;
 
 }
-
 
 
 
@@ -1941,32 +1963,22 @@ document.getElementById("assetCard")
 function openPDF(url){
 
 
-
 if(!url){
 
-
 alert(
-
 "Document not available"
-
 );
 
-
 return;
-
 
 }
 
 
 
 window.open(
-
 url,
-
 "_blank"
-
 );
-
 
 
 }
@@ -1987,7 +1999,6 @@ url,
 function logout(){
 
 
-
 localStorage.clear();
 
 
@@ -1996,6 +2007,7 @@ if(qrScanner){
 
 
 qrScanner.stop()
+
 .catch(()=>{});
 
 
@@ -2016,7 +2028,6 @@ location.reload();
 
 
 
-
 /************************************************
  AUTO LOGOUT
 ************************************************/
@@ -2027,20 +2038,12 @@ setInterval(function(){
 
 
 if(
-
-localStorage.getItem("login")
-
-!="YES"
-
+localStorage.getItem("login")!="YES"
 ){
-
 
 return;
 
-
 }
-
-
 
 
 
@@ -2048,12 +2051,8 @@ return;
 let loginTime =
 
 Number(
-
 localStorage.getItem("loginTime")
-
 );
-
-
 
 
 
@@ -2061,13 +2060,8 @@ localStorage.getItem("loginTime")
 let limit =
 
 Number(
-
 localStorage.getItem("Auto_Logoff_Minutes")
-
 );
-
-
-
 
 
 
@@ -2076,7 +2070,6 @@ if(!limit){
 limit=60;
 
 }
-
 
 
 
@@ -2092,20 +2085,11 @@ let used =
 
 
 
-
-
-if(
-
-used > limit
-
-){
-
+if(used > limit){
 
 
 alert(
-
-"Session expired. Please login again."
-
+"Session expired"
 );
 
 
@@ -2124,12 +2108,9 @@ logout();
 
 
 
-
 </script>
 
 
-
 </body>
-
 
 </html>
