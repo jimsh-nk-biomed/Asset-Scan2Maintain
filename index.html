@@ -2301,7 +2301,54 @@ logout();
 
 
 
+/************************************************
+ SHOW / HIDE PASSWORD
+************************************************/
 
+
+function togglePassword(){
+
+
+let passwordBox =
+
+document.getElementById("password");
+
+
+let eye =
+
+document.getElementById("eyeIcon");
+
+
+
+
+if(passwordBox.type === "password"){
+
+
+
+passwordBox.type="text";
+
+
+eye.innerHTML="🙈";
+
+
+
+}
+
+else{
+
+
+
+passwordBox.type="password";
+
+
+eye.innerHTML="👁️";
+
+
+
+}
+
+
+}
 
 </script>
 
