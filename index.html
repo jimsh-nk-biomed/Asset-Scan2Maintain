@@ -2830,4 +2830,174 @@ alert(
 
 
 
+ /************************************************
+ FORCE LOGOUT BUTTON
+************************************************/
+
+
+window.onload=function(){
+
+
+let logoutBtn=document.getElementById("logoutButton");
+
+
+
+if(logoutBtn){
+
+
+logoutBtn.onclick=function(){
+
+
+forceLogout();
+
+
+};
+
+
+}
+
+
+};
+
+
+
+
+
+function forceLogout(){
+
+
+
+console.log("Logout Started");
+
+
+
+
+// Stop camera
+
+if(qrScanner){
+
+
+try{
+
+
+qrScanner.stop();
+
+
+}
+
+catch(e){
+
+
+console.log(e);
+
+
+}
+
+
+}
+
+
+
+
+// Clear all session data
+
+
+localStorage.removeItem("login");
+
+localStorage.removeItem("Hospital_ID");
+
+localStorage.removeItem("License_Key");
+
+localStorage.removeItem("Installation");
+
+localStorage.removeItem("IQ");
+
+localStorage.removeItem("OQ");
+
+localStorage.removeItem("PQ");
+
+localStorage.removeItem("PMS");
+
+localStorage.removeItem("Calibration");
+
+localStorage.removeItem("Approve");
+
+localStorage.removeItem("Auto_Logoff_Minutes");
+
+localStorage.removeItem("loginTime");
+
+
+
+
+
+
+// Reset data
+
+
+equipmentData=[];
+
+currentUser={};
+
+hospitalID="";
+
+licenseKey="";
+
+
+
+
+
+
+// Clear details
+
+
+document.getElementById("assetCard").innerHTML="";
+
+
+
+
+
+// Hide scanner
+
+
+document.getElementById("scannerPage").style.display="none";
+
+
+
+
+
+// Show login
+
+
+document.getElementById("loginPage").style.display="block";
+
+
+
+
+
+
+// Clear login boxes
+
+
+document.getElementById("username").value="";
+
+document.getElementById("password").value="";
+
+
+
+
+
+alert("Logged out successfully");
+
+
+
+}
+ 
+</script>
+
+
+</body>
+
+
+</html>
+
 
