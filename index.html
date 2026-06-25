@@ -383,7 +383,7 @@ SCAN AGAIN
 
 
 
-<button class="logout" onclick="logout()">
+<button class="logout" id="logoutBtn">
 
 LOGOUT
 
@@ -2470,6 +2470,147 @@ eye.innerHTML="👁️";
 
 }
 
+/************************************************
+ LOGOUT BUTTON CONTROL
+************************************************/
+
+
+document.addEventListener("DOMContentLoaded", function(){
+
+
+let btn = document.getElementById("logoutBtn");
+
+
+
+if(btn){
+
+
+btn.addEventListener("click", function(){
+
+
+logout();
+
+
+});
+
+
+}
+
+
+});
+
+
+
+
+
+/************************************************
+ LOGOUT FUNCTION
+************************************************/
+
+
+function logout(){
+
+
+
+console.log("Logout clicked");
+
+
+
+
+// Stop QR camera
+
+if(qrScanner){
+
+
+qrScanner.stop()
+
+.then(()=>{
+
+console.log("Camera stopped");
+
+})
+
+.catch(()=>{
+
+console.log("Camera already stopped");
+
+});
+
+
+}
+
+
+
+
+
+// Clear session
+
+localStorage.clear();
+
+
+
+
+// Clear variables
+
+equipmentData=[];
+
+currentUser={};
+
+hospitalID="";
+
+licenseKey="";
+
+
+
+
+// Hide scanner
+
+document.getElementById("scannerPage")
+
+.style.display="none";
+
+
+
+
+// Show login
+
+document.getElementById("loginPage")
+
+.style.display="block";
+
+
+
+
+// Clear fields
+
+document.getElementById("username").value="";
+
+document.getElementById("password").value="";
+
+
+
+
+// Clear asset display
+
+document.getElementById("assetCard")
+
+.innerHTML="";
+
+
+
+
+// Stop scanner object
+
+qrScanner=null;
+
+
+
+alert("Logged out successfully");
+
+
+
+}
+ 
 </script>
 
 
