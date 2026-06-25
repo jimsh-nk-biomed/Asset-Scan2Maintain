@@ -616,7 +616,51 @@ licenseKey
 
 );
 
+/************************************
+ SAVE LICENSE MODULES
+************************************/
 
+
+if(data.Modules){
+
+
+localStorage.setItem(
+"Installation_MODULE",
+data.Modules.Installation
+);
+
+
+localStorage.setItem(
+"IQ_MODULE",
+data.Modules.IQ
+);
+
+
+localStorage.setItem(
+"OQ_MODULE",
+data.Modules.OQ
+);
+
+
+localStorage.setItem(
+"PQ_MODULE",
+data.Modules.PQ
+);
+
+
+localStorage.setItem(
+"PMS_MODULE",
+data.Modules.PMS
+);
+
+
+localStorage.setItem(
+"Calibration_MODULE",
+data.Modules.Calibration
+);
+
+
+}
 
 
 
@@ -1920,16 +1964,17 @@ ${calStatus.text}
  DOCUMENT ACCESS CONTROL
 ************************************************/
 
-
 if(
 
-localStorage.getItem("Installation")=="Yes"
+localStorage.getItem("Installation_MODULE")
+=="YES"
 
 &&
 
 a.Installation_PDF
 
-){
+)
+{
 
 
 html += `
@@ -1954,7 +1999,8 @@ Installation Document
 
 if(
 
-localStorage.getItem("PMS")=="Yes"
+localStorage.getItem("PMS_MODULE")
+=="YES"
 
 &&
 
@@ -1985,7 +2031,8 @@ PMS Document
 
 if(
 
-localStorage.getItem("Calibration")=="Yes"
+localStorage.getItem("Calibration_MODULE")
+=="YES"
 
 &&
 
@@ -2017,7 +2064,7 @@ Calibration Document
 
 if(
 
-localStorage.getItem("IQ")=="Yes"
+localStorage.getItem("IQ_MODULE")
 
 &&
 
@@ -2049,7 +2096,7 @@ IQ Document
 
 if(
 
-localStorage.getItem("OQ")=="Yes"
+localStorage.getItem("OQ_MODULE")
 
 &&
 
@@ -2081,7 +2128,7 @@ OQ Document
 
 if(
 
-localStorage.getItem("PQ")=="Yes"
+localStorage.getItem("PQ_MODULE")
 
 &&
 
