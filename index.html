@@ -1954,7 +1954,9 @@ Installation Document
 
 if(
 
-localStorage.getItem("PMS")=="Yes"
+JSON.parse(
+localStorage.getItem("Modules")
+).PMS=="Yes"
 
 &&
 
