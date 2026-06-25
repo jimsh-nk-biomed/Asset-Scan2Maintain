@@ -2171,30 +2171,150 @@ url,
 ************************************************/
 
 
+/************************************************
+ SECURE LOGOUT FUNCTION
+************************************************/
+
+
 function logout(){
 
 
-localStorage.clear();
 
-
+// Stop camera first
 
 if(qrScanner){
 
 
 qrScanner.stop()
 
-.catch(()=>{});
+.then(()=>{
+
+
+console.log("Camera stopped");
+
+
+})
+
+.catch(error=>{
+
+
+console.log(
+"Camera already stopped"
+);
+
+
+});
 
 
 }
 
 
 
-location.reload();
+
+
+
+// Clear all stored data
+
+
+localStorage.removeItem("login");
+
+localStorage.removeItem("Hospital_ID");
+
+localStorage.removeItem("License_Key");
+
+localStorage.removeItem("Installation");
+
+localStorage.removeItem("IQ");
+
+localStorage.removeItem("OQ");
+
+localStorage.removeItem("PQ");
+
+localStorage.removeItem("PMS");
+
+localStorage.removeItem("Calibration");
+
+localStorage.removeItem("Approve");
+
+localStorage.removeItem("Auto_Logoff_Minutes");
+
+localStorage.removeItem("loginTime");
+
+
+
+
+
+// Reset variables
+
+
+equipmentData=[];
+
+currentUser={};
+
+hospitalID="";
+
+licenseKey="";
+
+
+
+
+
+
+// Hide scanner page
+
+
+document.getElementById("scannerPage")
+
+.style.display="none";
+
+
+
+
+
+// Show login page
+
+
+document.getElementById("loginPage")
+
+.style.display="block";
+
+
+
+
+
+
+// Clear old details
+
+
+document.getElementById("assetCard")
+
+.innerHTML="";
+
+
+
+
+
+// Clear username/password
+
+
+document.getElementById("username").value="";
+
+document.getElementById("password").value="";
+
+
+
+
+
+
+alert(
+
+"You have been logged out successfully"
+
+);
+
 
 
 }
-
 
 
 
