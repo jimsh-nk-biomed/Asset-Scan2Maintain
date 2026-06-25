@@ -4,18 +4,15 @@
 
 <head>
 
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
 <title>
-Biomedical Asset Scanner
+Asset Scan2Maintain
 </title>
 
 
-
 <script src="https://unpkg.com/html5-qrcode"></script>
-
 
 
 
@@ -26,7 +23,7 @@ body{
 
 font-family:Arial, sans-serif;
 
-background:#eef3f7;
+background:#eef2f5;
 
 margin:0;
 
@@ -36,10 +33,9 @@ padding:10px;
 
 
 
-
 .card{
 
-max-width:430px;
+max-width:420px;
 
 margin:auto;
 
@@ -49,11 +45,9 @@ padding:15px;
 
 border-radius:15px;
 
-box-shadow:0px 3px 12px #aaa;
+box-shadow:0px 2px 10px #aaa;
 
 }
-
-
 
 
 
@@ -64,7 +58,6 @@ text-align:center;
 }
 
 
-
 .logo img{
 
 width:180px;
@@ -72,7 +65,6 @@ width:180px;
 max-width:90%;
 
 }
-
 
 
 
@@ -93,8 +85,6 @@ margin:15px;
 
 
 
-
-
 input{
 
 width:100%;
@@ -103,11 +93,11 @@ padding:12px;
 
 margin-top:10px;
 
-font-size:16px;
-
 border-radius:8px;
 
-border:1px solid #bbb;
+border:1px solid #ccc;
+
+font-size:15px;
 
 box-sizing:border-box;
 
@@ -115,38 +105,7 @@ box-sizing:border-box;
 
 
 
-
-
-.passwordBox{
-
-position:relative;
-
-}
-
-
-
-
-
-.eye{
-
-position:absolute;
-
-right:15px;
-
-top:22px;
-
-font-size:22px;
-
-cursor:pointer;
-
-}
-
-
-
-
-
 button{
-
 
 width:100%;
 
@@ -158,87 +117,51 @@ border:none;
 
 border-radius:8px;
 
-font-size:16px;
-
 background:#0066cc;
 
 color:white;
 
+font-size:16px;
+
 cursor:pointer;
 
-
 }
-
 
 
 
 .logout{
 
-
 background:red;
 
-
 }
-
-
 
 
 
 .back{
 
-
 background:#ff9800;
 
-
 }
-
-
-
 
 
 
 #scannerPage{
 
-
 display:none;
 
-
 }
-
-
-
 
 
 
 #reader{
 
-
 margin-top:15px;
 
-
 }
-
-
-
-
-
-.message{
-
-
-text-align:center;
-
-color:red;
-
-margin-top:10px;
-
-
-}
-
 
 
 
 .row{
-
 
 display:grid;
 
@@ -246,29 +169,23 @@ grid-template-columns:130px 10px auto;
 
 margin:8px 0;
 
+font-size:14px;
 
 }
-
-
 
 
 
 .label{
 
-
 font-weight:bold;
 
 color:#003366;
-
 
 }
 
 
 
-
-
 .box{
-
 
 border:1px solid #007bff;
 
@@ -280,37 +197,42 @@ margin-top:12px;
 
 background:#f8fbff;
 
-
 }
-
-
 
 
 
 .box-title{
 
-
 font-size:18px;
 
 font-weight:bold;
 
-color:#0066cc;
+color:#007bff;
 
 margin-bottom:10px;
-
 
 }
 
 
+
+.message{
+
+text-align:center;
+
+color:red;
+
+margin-top:10px;
+
+font-size:14px;
+
+}
 
 
 
 </style>
 
 
-
 </head>
-
 
 
 
@@ -319,17 +241,10 @@ margin-bottom:10px;
 
 
 
-
-
-
-
 <!-- ================= LOGIN PAGE ================= -->
 
 
-
 <div id="loginPage" class="card">
-
-
 
 
 
@@ -341,16 +256,11 @@ margin-bottom:10px;
 
 
 
-
-
 <div class="title">
 
-Biomedical Asset Scanner
+Asset Scan2Maintain
 
 </div>
-
-
-
 
 
 
@@ -364,11 +274,7 @@ placeholder="Username"
 
 
 
-
-
-
-
-<div class="passwordBox">
+<div style="position:relative;">
 
 
 <input
@@ -379,20 +285,28 @@ type="password"
 
 placeholder="Password"
 
+style="padding-right:45px;"
 
 >
-
 
 
 <span
 
-class="eye"
-
 onclick="togglePassword()"
 
-id="eyeIcon"
+style="
 
->
+position:absolute;
+
+right:15px;
+
+top:22px;
+
+cursor:pointer;
+
+font-size:20px;
+
+">
 
 👁️
 
@@ -400,10 +314,6 @@ id="eyeIcon"
 
 
 </div>
-
-
-
-
 
 
 
@@ -415,13 +325,7 @@ LOGIN
 
 
 
-
-
-
-
 <div id="msg" class="message"></div>
-
-
 
 
 
@@ -443,34 +347,23 @@ LOGIN
 
 
 
-
-
 <div class="card">
-
-
 
 
 
 <div class="logo">
 
-
 <img src="logo.jpg">
 
-
 </div>
-
-
 
 
 
 <div class="title">
 
-Biomedical Asset Scanner
+Asset Scan2Maintain
 
 </div>
-
-
-
 
 
 
@@ -478,13 +371,7 @@ Biomedical Asset Scanner
 
 
 
-
-
 <div id="assetCard"></div>
-
-
-
-
 
 
 
@@ -496,10 +383,6 @@ SCAN AGAIN
 
 
 
-
-
-
-
 <button class="logout" id="logoutButton">
 
 LOGOUT
@@ -508,15 +391,10 @@ LOGOUT
 
 
 
-
-
-
 </div>
 
 
 </div>
-
-
 
 
 
@@ -529,27 +407,17 @@ LOGOUT
 
 
 
-
 /************************************************
- LICENSE SERVER URL
+ CONFIGURATION
 ************************************************/
 
 
-
 const LICENSE_API =
-
 
 "https://script.google.com/macros/s/AKfycbyE7UtLzwYfv8RmHM5Yhm6_II89j3Vae-mcIJgCKJNb5A1oRZKh840enZyRqaLnKMXasA/exec";
 
 
 
-
-
-
-
-/************************************************
- GLOBAL VARIABLES
-************************************************/
 
 
 let equipmentData=[];
@@ -564,66 +432,13 @@ let hospitalID="";
 let licenseKey="";
 
 
-let modules={};
-
-
 let qrScanner=null;
 
 
 let autoLogoutMinutes=60;
 
-/************************************************
- PASSWORD SHOW / HIDE
-************************************************/
 
-
-function togglePassword(){
-
-
-let pass =
-
-document.getElementById("password");
-
-
-
-let eye =
-
-document.getElementById("eyeIcon");
-
-
-
-
-
-if(pass.type=="password"){
-
-
-pass.type="text";
-
-
-eye.innerHTML="🙈";
-
-
-}
-
-else{
-
-
-pass.type="password";
-
-
-eye.innerHTML="👁️";
-
-
-}
-
-
-}
-
-
-
-
-
-
+let licenseDays=0;
 
 
 
@@ -639,30 +454,22 @@ function login(){
 let username =
 
 document.getElementById("username")
-
 .value
-
 .trim();
-
-
 
 
 
 let password =
 
 document.getElementById("password")
-
 .value
-
 .trim();
 
 
 
 
 
-
 if(username=="" || password==""){
-
 
 
 document.getElementById("msg").innerHTML=
@@ -674,19 +481,6 @@ return;
 
 
 }
-
-
-
-
-
-
-
-document.getElementById("msg").innerHTML=
-
-"Checking login...";
-
-
-
 
 
 
@@ -721,19 +515,7 @@ encodeURIComponent(password);
 
 
 
-
-
-fetch(url,
-
-{
-
-method:"GET",
-
-cache:"no-store"
-
-})
-
-
+fetch(url)
 
 
 
@@ -741,23 +523,14 @@ cache:"no-store"
 
 
 
-
-
 .then(data=>{
 
 
 
-
-
 console.log(
-
-"LOGIN RESPONSE",
-
+"LOGIN RESPONSE:",
 data
-
 );
-
-
 
 
 
@@ -767,16 +540,16 @@ if(
 
 String(data.status).toUpperCase()
 
-!="VALID"
+!=
+
+"VALID"
 
 ){
 
 
-
 document.getElementById("msg").innerHTML=
 
-data.message || "Invalid Login";
-
+"Invalid Username or Password";
 
 
 return;
@@ -790,11 +563,9 @@ return;
 
 
 
-
-
-/************************************************
- SAVE USER DETAILS
-************************************************/
+/*
+SAVE USER DATA
+*/
 
 
 
@@ -807,11 +578,6 @@ hospitalID=data.Hospital_ID;
 
 
 licenseKey=data.License_Key;
-
-
-
-modules=data.Modules;
-
 
 
 
@@ -830,7 +596,6 @@ localStorage.setItem(
 
 
 
-
 localStorage.setItem(
 
 "Hospital_ID",
@@ -838,8 +603,6 @@ localStorage.setItem(
 hospitalID
 
 );
-
-
 
 
 
@@ -858,12 +621,17 @@ licenseKey
 
 
 
+/*
+SAVE PERMISSIONS
+*/
+
+
 
 localStorage.setItem(
 
-"Modules",
+"Installation",
 
-JSON.stringify(modules)
+data.User.Installation || "No"
 
 );
 
@@ -871,13 +639,11 @@ JSON.stringify(modules)
 
 
 
-
-
 localStorage.setItem(
 
-"Hospital",
+"IQ",
 
-data.Hospital
+data.User.IQ || "No"
 
 );
 
@@ -885,12 +651,11 @@ data.Hospital
 
 
 
-
 localStorage.setItem(
 
-"License_Expiry",
+"OQ",
 
-data.License_Expiry
+data.User.OQ || "No"
 
 );
 
@@ -898,13 +663,11 @@ data.License_Expiry
 
 
 
-
-
 localStorage.setItem(
 
-"Days_Left",
+"PQ",
 
-data.Days_Left
+data.User.PQ || "No"
 
 );
 
@@ -912,18 +675,49 @@ data.Days_Left
 
 
 
+localStorage.setItem(
+
+"PMS",
+
+data.User.PMS || "No"
+
+);
 
 
 
-autoLogoutMinutes =
+
+
+localStorage.setItem(
+
+"Calibration",
+
+data.User.Calibration || "No"
+
+);
+
+
+
+
+
+localStorage.setItem(
+
+"Approve",
+
+data.User.Approve || "No"
+
+);
+
+
+
+
+
+autoLogoutMinutes=
 
 Number(
 
 data.User.Auto_Logoff_Minutes || 60
 
 );
-
-
 
 
 
@@ -936,8 +730,6 @@ localStorage.setItem(
 autoLogoutMinutes
 
 );
-
-
 
 
 
@@ -957,12 +749,9 @@ Date.now()
 
 
 
-
-
-/************************************************
- AFTER LOGIN
-************************************************/
-
+/*
+CHECK LICENSE
+*/
 
 
 checkLicense();
@@ -982,7 +771,7 @@ console.log(error);
 
 document.getElementById("msg").innerHTML=
 
-"Server connection error";
+"Login Error";
 
 
 });
@@ -998,10 +787,9 @@ document.getElementById("msg").innerHTML=
 
 
 
-
 /************************************************
  LICENSE CHECK
-************************************************/
+*************************************************/
 
 
 function checkLicense(){
@@ -1037,39 +825,27 @@ encodeURIComponent(licenseKey);
 
 
 
+document.getElementById("msg").innerHTML =
+"Checking login...";
+
 
 fetch(url,
-
 {
-
+method:"GET",
 cache:"no-store"
-
 })
-
-
-
-
-
 .then(response=>response.json())
-
-
-
-
-
 .then(data=>{
-
-
 
 
 
 console.log(
 
-"LICENSE RESPONSE",
+"LICENSE RESPONSE:",
 
 data
 
 );
-
 
 
 
@@ -1096,13 +872,13 @@ height:100vh;
 
 display:flex;
 
-justify-content:center;
-
 align-items:center;
 
-font-family:Arial;
+justify-content:center;
 
 text-align:center;
+
+font-family:Arial;
 
 ">
 
@@ -1113,7 +889,7 @@ LICENSE EXPIRED
 
 <br><br>
 
-Please contact administrator
+Please contact Administrator
 
 </h2>
 
@@ -1132,14 +908,12 @@ return;
 
 
 
+licenseDays=data.days;
+
 
 
 
 loadEquipment();
-
-
-
-
 
 
 
@@ -1168,15 +942,7 @@ alert(
 
 }
 
-
-
-
-
-
-
-
-
-/************************************************
+ /************************************************
  LOAD EQUIPMENT DATA
 ************************************************/
 
@@ -1214,16 +980,7 @@ encodeURIComponent(licenseKey);
 
 
 
-
-fetch(url,
-
-{
-
-cache:"no-store"
-
-})
-
-
+fetch(url)
 
 
 
@@ -1231,23 +988,17 @@ cache:"no-store"
 
 
 
-
-
 .then(data=>{
-
-
 
 
 
 console.log(
 
-"EQUIPMENT DATA",
+"EQUIPMENT RESPONSE:",
 
 data
 
 );
-
-
 
 
 
@@ -1264,13 +1015,11 @@ data.status!="VALID"
 ){
 
 
-
 alert(
 
-"Unable to load equipment"
+"Unable to load equipment data"
 
 );
-
 
 
 return;
@@ -1283,19 +1032,14 @@ return;
 
 
 
-
-
 equipmentData=data;
-
-
-
 
 
 
 
 console.log(
 
-"Equipment Count:",
+"TOTAL EQUIPMENT:",
 
 equipmentData.length
 
@@ -1305,11 +1049,7 @@ equipmentData.length
 
 
 
-
 openScanner();
-
-
-
 
 
 
@@ -1320,14 +1060,13 @@ openScanner();
 .catch(error=>{
 
 
-
 console.log(error);
 
 
 
 alert(
 
-"Equipment loading error"
+"Equipment loading failed"
 
 );
 
@@ -1339,8 +1078,16 @@ alert(
 
 }
 
+
+
+
+
+
+
+
+
 /************************************************
- OPEN QR SCANNER
+ OPEN SCANNER PAGE
 ************************************************/
 
 
@@ -1364,8 +1111,7 @@ document.getElementById("scannerPage")
 
 
 
-
-startScanner();
+startQRScanner();
 
 
 
@@ -1384,94 +1130,88 @@ startScanner();
 ************************************************/
 
 
-function startScanner(){
+function startQRScanner(){
+
+
+
+document.getElementById("reader")
+
+.innerHTML="";
+
+
+
+
+qrScanner =
+
+new Html5Qrcode("reader");
 
 
 
 
 
-if(qrScanner){
-
-
-try{
-
-
-qrScanner.clear();
-
-
-}
-
-catch(e){}
+Html5Qrcode.getCameras()
 
 
 
-}
+.then(cameras=>{
 
 
 
+if(
+
+!cameras ||
+
+cameras.length==0
+
+){
 
 
+alert(
 
-
-
-qrScanner = new Html5Qrcode(
-
-"reader"
+"No camera available"
 
 );
 
 
+return;
 
-
-
-
-
-let config = {
-
-
-fps:10,
-
-
-qrbox:{
-
-
-width:250,
-
-
-height:250
-
-
-},
-
-
-
-aspectRatio:1.0
-
-
-
-};
-
-
-
-
-
-
-
-
-let cameraConfig = {
-
-
-facingMode:
-
-{
-
-exact:"environment"
 
 }
 
 
-};
 
+
+
+let cameraId = null;
+
+
+// Prefer back camera
+
+for(let i=0;i<cameras.length;i++){
+
+    let label = cameras[i].label.toLowerCase();
+
+    if(
+        label.includes("back") ||
+        label.includes("rear") ||
+        label.includes("environment")
+    ){
+
+        cameraId = cameras[i].id;
+        break;
+
+    }
+
+}
+
+
+// If back camera not found use first camera
+
+if(!cameraId){
+
+    cameraId = cameras[0].id;
+
+}
 
 
 
@@ -1481,9 +1221,23 @@ exact:"environment"
 
 qrScanner.start(
 
-cameraConfig,
 
-config,
+
+cameraId,
+
+
+
+{
+
+
+fps:10,
+
+qrbox:250
+
+
+},
+
+
 
 
 
@@ -1493,7 +1247,7 @@ config,
 
 console.log(
 
-"QR RESULT",
+"QR SCANNED:",
 
 decodedText
 
@@ -1503,8 +1257,145 @@ decodedText
 
 
 
-processQR(decodedText);
 
+qrScanner.stop()
+
+.then(()=>{
+
+
+
+
+
+/*
+CLEAN QR VALUE
+*/
+
+
+
+let scannedAsset =
+
+String(decodedText)
+
+.trim()
+
+.toUpperCase()
+
+.replace(/\s/g,'')
+
+.replace(/[\r\n]/g,'');
+
+
+
+
+
+
+console.log(
+
+"CLEAN QR:",
+
+scannedAsset
+
+);
+
+
+
+
+
+
+
+
+/*
+SEARCH ASSET
+*/
+
+
+
+let asset =
+
+
+
+equipmentData.find(item=>{
+
+
+
+
+
+let sheetAsset =
+
+
+
+String(item.Asset_No || "")
+
+.trim()
+
+.toUpperCase()
+
+.replace(/\s/g,'')
+
+.replace(/[\r\n]/g,'');
+
+
+
+
+
+
+return sheetAsset === scannedAsset;
+
+
+
+});
+
+
+
+
+
+
+
+
+if(!asset){
+
+
+
+alert(
+
+
+"ASSET NOT FOUND\n\n"
+
++
+
+"Scanned:\n"
+
++
+
+scannedAsset
+
+
+
+);
+
+
+
+startQRScanner();
+
+
+
+return;
+
+
+}
+
+
+
+
+
+showAsset(asset);
+
+
+
+
+
+
+});
 
 
 
@@ -1514,15 +1405,18 @@ processQR(decodedText);
 
 
 
-(errorMessage)=>{
+(error)=>{
+
+
+// QR scanning errors ignored
 
 
 
 }
 
+
+
 )
-
-
 
 
 
@@ -1530,152 +1424,15 @@ processQR(decodedText);
 
 
 
-
-
-console.log(
-
-"Back camera failed",
-
-error
-
-);
+console.log(error);
 
 
 
+alert(
 
-
-
-
-// fallback camera
-
-
-
-Html5Qrcode.getCameras()
-
-.then(cameras=>{
-
-
-
-if(cameras && cameras.length){
-
-
-
-qrScanner.start(
-
-cameras[cameras.length-1].id,
-
-config,
-
-
-
-(decodedText)=>{
-
-
-processQR(decodedText);
-
-
-}
-
-
+"Camera start error"
 
 );
-
-
-
-}
-
-
-
-});
-
-
-
-
-});
-
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/************************************************
- PROCESS QR RESULT
-************************************************/
-
-
-function processQR(code){
-
-
-
-
-
-// stop scanning after success
-
-
-if(qrScanner){
-
-
-
-qrScanner.pause(true);
-
-
-
-}
-
-
-
-
-
-
-
-
-let assetNo =
-
-String(code)
-
-.trim();
-
-
-
-
-
-
-
-console.log(
-
-"Searching Asset:",
-
-assetNo
-
-);
-
-
-
-
-
-
-
-
-
-let found =
-
-equipmentData.find(function(item){
-
-
-
-return String(item.Asset_No)
-
-.trim()
-
-== assetNo;
 
 
 
@@ -1685,80 +1442,27 @@ return String(item.Asset_No)
 
 
 
+})
 
 
 
-
-if(!found){
-
-
-
-document.getElementById("assetCard")
-
-.innerHTML=
+.catch(error=>{
 
 
 
-`
-
-<div class="box"
-
-
-style="
-
-color:red;
-
-text-align:center;
-
-font-weight:bold;
-
-">
-
-
-Asset Not Found
-
-<br><br>
-
-${assetNo}
-
-
-</div>
-
-`;
+console.log(error);
 
 
 
+alert(
 
-return;
-
-
-
-}
-
-
-
-
-
-
-
-
-console.log(
-
-"ASSET FOUND",
-
-found
+"Camera permission denied"
 
 );
 
 
 
-
-
-
-
-showAsset(found);
-
-
+});
 
 
 
@@ -1781,53 +1485,19 @@ function scanAgain(){
 
 
 
-
-
 document.getElementById("assetCard")
 
 .innerHTML="";
 
 
 
-
-
-
-
-if(qrScanner){
-
-
-
-try{
-
-
-
-qrScanner.resume();
+startQRScanner();
 
 
 
 }
-
-catch(e){
-
-
-
-startScanner();
-
-
-
-}
-
-
-
-}
-
-
-
-
-}
-
 /************************************************
- DATE FORMAT
+ DATE FORMAT FUNCTION
 ************************************************/
 
 
@@ -1842,7 +1512,7 @@ return "-";
 
 
 
-let d=new Date(value);
+let d = new Date(value);
 
 
 
@@ -1856,7 +1526,7 @@ return value;
 
 
 
-let day=
+let day =
 
 String(d.getDate())
 
@@ -1864,7 +1534,7 @@ String(d.getDate())
 
 
 
-let month=
+let month =
 
 String(d.getMonth()+1)
 
@@ -1872,14 +1542,14 @@ String(d.getMonth()+1)
 
 
 
-let year=
+let year =
 
 d.getFullYear();
 
 
 
-
 return day+"-"+month+"-"+year;
+
 
 
 }
@@ -1891,9 +1561,8 @@ return day+"-"+month+"-"+year;
 
 
 
-
 /************************************************
- STATUS DISPLAY
+ STATUS DISPLAY FUNCTION
 ************************************************/
 
 
@@ -1917,13 +1586,14 @@ color:"black"
 
 
 
-let s=
 
-String(status)
+
+let s = String(status)
 
 .toUpperCase()
 
 .trim();
+
 
 
 
@@ -1950,6 +1620,8 @@ color:"red"
 
 
 
+
+
 if(s.includes("DUE SOON")){
 
 
@@ -1971,6 +1643,7 @@ color:"orange"
 
 
 
+
 if(s.includes("ACTIVE")){
 
 
@@ -1986,6 +1659,7 @@ color:"green"
 
 
 }
+
 
 
 
@@ -2012,55 +1686,7 @@ color:"black"
 
 
 /************************************************
- CHECK MODULE ACCESS
-************************************************/
-
-
-function moduleAllowed(name){
-
-
-
-let m =
-
-JSON.parse(
-
-localStorage.getItem("Modules")
-
-);
-
-
-
-
-
-if(!m){
-
-return false;
-
-}
-
-
-
-
-return String(m[name])
-
-.toUpperCase()
-
-=="YES";
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/************************************************
- SHOW ASSET DETAILS
+ DISPLAY ASSET DETAILS
 ************************************************/
 
 
@@ -2068,23 +1694,18 @@ function showAsset(a){
 
 
 
-let pms=
+let pmsStatus = statusDisplay(a.PMS_Status);
 
-statusDisplay(a.PMS_Status);
-
-
-
-let cal=
-
-statusDisplay(a.CAL_Status);
+let calStatus = statusDisplay(a.CAL_Status);
 
 
 
 
 
+let html = `
 
 
-let html=`
+
 
 <div class="box">
 
@@ -2098,36 +1719,20 @@ Equipment Details
 
 
 
+
 <div class="row">
-
-<div class="label">
-
-Asset No
-
-</div>
-
+<div class="label">Asset No</div>
 <div>:</div>
-
 <div>${a.Asset_No || "-"}</div>
-
 </div>
-
 
 
 
 
 <div class="row">
-
-<div class="label">
-
-Department
-
-</div>
-
+<div class="label">Department</div>
 <div>:</div>
-
 <div>${a.Department || "-"}</div>
-
 </div>
 
 
@@ -2135,17 +1740,9 @@ Department
 
 
 <div class="row">
-
-<div class="label">
-
-Equipment
-
-</div>
-
+<div class="label">Equipment</div>
 <div>:</div>
-
 <div>${a.Equipment || "-"}</div>
-
 </div>
 
 
@@ -2153,17 +1750,9 @@ Equipment
 
 
 <div class="row">
-
-<div class="label">
-
-Model
-
-</div>
-
+<div class="label">Model</div>
 <div>:</div>
-
 <div>${a.Model || "-"}</div>
-
 </div>
 
 
@@ -2171,17 +1760,9 @@ Model
 
 
 <div class="row">
-
-<div class="label">
-
-Make
-
-</div>
-
+<div class="label">Make</div>
 <div>:</div>
-
 <div>${a.Make || "-"}</div>
-
 </div>
 
 
@@ -2189,23 +1770,15 @@ Make
 
 
 <div class="row">
-
-<div class="label">
-
-Serial No
-
-</div>
-
+<div class="label">Serial No</div>
 <div>:</div>
-
 <div>${a.Serial_No || "-"}</div>
-
 </div>
 
 
 
-
 </div>
+
 
 
 
@@ -2227,18 +1800,11 @@ PMS Details
 
 
 
+
 <div class="row">
-
-<div class="label">
-
-PMS Done
-
-</div>
-
+<div class="label">PMS Done</div>
 <div>:</div>
-
 <div>${formatDate(a.PMS_Done_On)}</div>
-
 </div>
 
 
@@ -2246,17 +1812,9 @@ PMS Done
 
 
 <div class="row">
-
-<div class="label">
-
-PMS Due
-
-</div>
-
+<div class="label">PMS Due</div>
 <div>:</div>
-
 <div>${formatDate(a.PMS_Due_On)}</div>
-
 </div>
 
 
@@ -2264,23 +1822,19 @@ PMS Due
 
 
 <div class="row">
-
-<div class="label">
-
-Status
-
-</div>
-
+<div class="label">Status</div>
 <div>:</div>
 
-<div style="color:${pms.color};font-weight:bold">
+<div style="
+font-weight:bold;
+color:${pmsStatus.color}
+">
 
-${pms.text}
+${pmsStatus.text}
 
 </div>
 
 </div>
-
 
 
 
@@ -2308,17 +1862,9 @@ Calibration Details
 
 
 <div class="row">
-
-<div class="label">
-
-Calibration Done
-
-</div>
-
+<div class="label">Calibration Done</div>
 <div>:</div>
-
 <div>${formatDate(a.Calibration_Done_On)}</div>
-
 </div>
 
 
@@ -2326,17 +1872,9 @@ Calibration Done
 
 
 <div class="row">
-
-<div class="label">
-
-Calibration Due
-
-</div>
-
+<div class="label">Calibration Due</div>
 <div>:</div>
-
 <div>${formatDate(a.Calibration_Due_On)}</div>
-
 </div>
 
 
@@ -2345,18 +1883,17 @@ Calibration Due
 
 <div class="row">
 
-<div class="label">
-
-Status
-
-</div>
+<div class="label">Status</div>
 
 <div>:</div>
 
 
-<div style="color:${cal.color};font-weight:bold">
+<div style="
+font-weight:bold;
+color:${calStatus.color}
+">
 
-${cal.text}
+${calStatus.text}
 
 </div>
 
@@ -2380,18 +1917,23 @@ ${cal.text}
 
 
 /************************************************
- DOCUMENT BUTTONS
+ DOCUMENT ACCESS CONTROL
 ************************************************/
 
 
+if(
 
-if(moduleAllowed("Installation")
+localStorage.getItem("Installation")=="Yes"
 
-&& a.Installation_PDF){
+&&
+
+a.Installation_PDF
+
+){
 
 
+html += `
 
-html+=`
 
 <button onclick="openPDF('${a.Installation_PDF}')">
 
@@ -2399,28 +1941,6 @@ Installation Document
 
 </button>
 
-`;
-
-}
-
-
-
-
-
-
-if(moduleAllowed("IQ")
-
-&& a.IQ_PDF){
-
-
-
-html+=`
-
-<button onclick="openPDF('${a.IQ_PDF}')">
-
-IQ Document
-
-</button>
 
 `;
 
@@ -2431,59 +1951,20 @@ IQ Document
 
 
 
-if(moduleAllowed("OQ")
 
-&& a.OQ_PDF){
+if(
 
+localStorage.getItem("PMS")=="Yes"
 
+&&
 
-html+=`
+a.PMS_PDF
 
-<button onclick="openPDF('${a.OQ_PDF}')">
-
-OQ Document
-
-</button>
-
-`;
-
-}
+){
 
 
+html += `
 
-
-
-
-if(moduleAllowed("PQ")
-
-&& a.PQ_PDF){
-
-
-
-html+=`
-
-<button onclick="openPDF('${a.PQ_PDF}')">
-
-PQ Document
-
-</button>
-
-`;
-
-}
-
-
-
-
-
-
-if(moduleAllowed("PMS")
-
-&& a.PMS_PDF){
-
-
-
-html+=`
 
 <button onclick="openPDF('${a.PMS_PDF}')">
 
@@ -2491,6 +1972,7 @@ PMS Document
 
 </button>
 
+
 `;
 
 }
@@ -2500,13 +1982,20 @@ PMS Document
 
 
 
-if(moduleAllowed("Calibration")
 
-&& a.Calibration_PDF){
+if(
+
+localStorage.getItem("Calibration")=="Yes"
+
+&&
+
+a.Calibration_PDF
+
+){
 
 
+html += `
 
-html+=`
 
 <button onclick="openPDF('${a.Calibration_PDF}')">
 
@@ -2514,10 +2003,106 @@ Calibration Document
 
 </button>
 
+
 `;
 
 }
 
+
+
+
+
+
+
+
+if(
+
+localStorage.getItem("IQ")=="Yes"
+
+&&
+
+a.IQ_PDF
+
+){
+
+
+html += `
+
+
+button onclick="openPDF('${a.IQ_PDF}')">
+
+IQ Document
+
+</button>
+
+
+`;
+
+}
+
+
+
+
+
+
+
+
+if(
+
+localStorage.getItem("OQ")=="Yes"
+
+&&
+
+a.OQ_PDF
+
+){
+
+
+html += `
+
+
+<button onclick="openPDF('${a.OQ_PDF}')">
+
+OQ Document
+
+</button>
+
+
+`;
+
+}
+
+
+
+
+
+
+
+
+if(
+
+localStorage.getItem("PQ")=="Yes"
+
+&&
+
+a.PQ_PDF
+
+){
+
+
+html += `
+
+
+<button onclick="openPDF('${a.PQ_PDF}')">
+
+PQ Document
+
+</button>
+
+
+`;
+
+}
 
 
 
@@ -2542,7 +2127,7 @@ document.getElementById("assetCard")
 
 
 /************************************************
- OPEN DOCUMENT
+ OPEN PDF
 ************************************************/
 
 
@@ -2586,80 +2171,80 @@ url,
 ************************************************/
 
 
-document.addEventListener(
-
-"DOMContentLoaded",
-
-function(){
-
-
-
-let btn=
-
-document.getElementById("logoutButton");
-
-
-
-
-if(btn){
-
-
-
-btn.onclick=function(){
-
-
-logout();
-
-
-};
-
-
-
-}
-
-
-
-}
-
-);
-
-
-
-
-
+/************************************************
+ SECURE LOGOUT FUNCTION
+************************************************/
 
 
 function logout(){
 
 
 
+// Stop camera first
+
 if(qrScanner){
 
 
+qrScanner.stop()
 
-try{
+.then(()=>{
 
 
-qrScanner.stop();
+console.log("Camera stopped");
+
+
+})
+
+.catch(error=>{
+
+
+console.log(
+"Camera already stopped"
+);
+
+
+});
 
 
 }
 
-catch(e){}
-
-
-
-}
 
 
 
 
 
-localStorage.clear();
+// Clear all stored data
+
+
+localStorage.removeItem("login");
+
+localStorage.removeItem("Hospital_ID");
+
+localStorage.removeItem("License_Key");
+
+localStorage.removeItem("Installation");
+
+localStorage.removeItem("IQ");
+
+localStorage.removeItem("OQ");
+
+localStorage.removeItem("PQ");
+
+localStorage.removeItem("PMS");
+
+localStorage.removeItem("Calibration");
+
+localStorage.removeItem("Approve");
+
+localStorage.removeItem("Auto_Logoff_Minutes");
+
+localStorage.removeItem("loginTime");
 
 
 
 
+
+// Reset variables
 
 
 equipmentData=[];
@@ -2670,21 +2255,12 @@ hospitalID="";
 
 licenseKey="";
 
-modules={};
 
 
 
 
 
-
-
-document.getElementById("assetCard")
-
-.innerHTML="";
-
-
-
-
+// Hide scanner page
 
 
 document.getElementById("scannerPage")
@@ -2695,6 +2271,8 @@ document.getElementById("scannerPage")
 
 
 
+// Show login page
+
 
 document.getElementById("loginPage")
 
@@ -2703,6 +2281,20 @@ document.getElementById("loginPage")
 
 
 
+
+
+// Clear old details
+
+
+document.getElementById("assetCard")
+
+.innerHTML="";
+
+
+
+
+
+// Clear username/password
 
 
 document.getElementById("username").value="";
@@ -2716,15 +2308,13 @@ document.getElementById("password").value="";
 
 alert(
 
-"Logged out successfully"
+"You have been logged out successfully"
 
 );
 
 
 
 }
-
-
 
 
 
@@ -2741,15 +2331,15 @@ setInterval(function(){
 
 
 
-
-
 if(
 
 localStorage.getItem("login")!="YES"
 
 ){
 
+
 return;
+
 
 }
 
@@ -2757,7 +2347,7 @@ return;
 
 
 
-let loginTime=
+let loginTime =
 
 Number(
 
@@ -2769,7 +2359,7 @@ localStorage.getItem("loginTime")
 
 
 
-let limit=
+let limit =
 
 Number(
 
@@ -2791,7 +2381,7 @@ limit=60;
 
 
 
-let used=
+let used =
 
 (Date.now()-loginTime)
 
@@ -2803,8 +2393,19 @@ let used=
 
 
 
+if(
 
-if(used>limit){
+used > limit
+
+){
+
+
+
+alert(
+
+"Session expired. Please login again."
+
+);
 
 
 
@@ -2812,12 +2413,128 @@ logout();
 
 
 
-alert(
+}
 
-"Session expired"
 
-);
 
+},30000);
+
+
+
+/************************************************
+ SHOW / HIDE PASSWORD
+************************************************/
+
+
+function togglePassword(){
+
+
+let passwordBox =
+
+document.getElementById("password");
+
+
+let eye =
+
+document.getElementById("eyeIcon");
+
+
+
+
+if(passwordBox.type === "password"){
+
+
+
+passwordBox.type="text";
+
+
+eye.innerHTML="🙈";
+
+
+
+}
+
+else{
+
+
+
+passwordBox.type="password";
+
+
+eye.innerHTML="👁️";
+
+
+
+}
+
+
+}
+
+/************************************************
+ LOGOUT BUTTON CONTROL
+************************************************/
+
+
+document.addEventListener("DOMContentLoaded", function(){
+
+
+let btn = document.getElementById("logoutBtn");
+
+
+
+if(btn){
+
+
+btn.addEventListener("click", function(){
+
+
+logout();
+
+
+});
+
+
+}
+
+
+});
+
+
+
+
+
+/************************************************
+ LOGOUT FUNCTION
+************************************************/
+
+
+function logout(){
+
+
+
+console.log("Logout clicked");
+
+
+
+
+// Stop QR camera
+
+if(qrScanner){
+
+
+qrScanner.stop()
+
+.then(()=>{
+
+console.log("Camera stopped");
+
+})
+
+.catch(()=>{
+
+console.log("Camera already stopped");
+
+});
 
 
 }
@@ -2826,9 +2543,73 @@ alert(
 
 
 
-},30000);
+// Clear session
+
+localStorage.clear();
 
 
+
+
+// Clear variables
+
+equipmentData=[];
+
+currentUser={};
+
+hospitalID="";
+
+licenseKey="";
+
+
+
+
+// Hide scanner
+
+document.getElementById("scannerPage")
+
+.style.display="none";
+
+
+
+
+// Show login
+
+document.getElementById("loginPage")
+
+.style.display="block";
+
+
+
+
+// Clear fields
+
+document.getElementById("username").value="";
+
+document.getElementById("password").value="";
+
+
+
+
+// Clear asset display
+
+document.getElementById("assetCard")
+
+.innerHTML="";
+
+
+
+
+// Stop scanner object
+
+qrScanner=null;
+
+
+
+alert("Logged out successfully");
+
+
+
+}
 
  /************************************************
  FORCE LOGOUT BUTTON
@@ -2999,5 +2780,3 @@ alert("Logged out successfully");
 
 
 </html>
-
-
